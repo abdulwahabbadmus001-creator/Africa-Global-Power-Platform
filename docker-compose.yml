@@ -1,0 +1,39 @@
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: agp
+      POSTGRES_USER: agp
+      POSTGRES_PASSWORD: agp_local_password
+    ports:
+      - "5434:5432"
+    volumes:
+      - agp_postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U agp -d agp"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  api:
+    build: ./backend
+    environment:
+      APP_NAME: "Africa & Global Power API"
+      ENVIRONMENT: development
+      API_V1_PREFIX: /api/v1
+      SECRET_KEY: local-development-secret-change-before-production
+      ACCESS_TOKEN_MINUTES: 480
+      DATABASE_URL: postgresql+psycopg://agp:agp_local_password@db:5432/agp
+      CORS_ORIGINS: http://localhost:5173,http://127.0.0.1:5173
+      COOKIE_SECURE: "false"
+    depends_on:
+      db:
+        condition: service_healthy
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./backend:/app
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+
+volumes:
+  agp_postgres_data:

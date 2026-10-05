@@ -1,0 +1,11 @@
+import { Search, UserRoundSearch } from 'lucide-react'
+import { useEffect, useState } from 'react'
+import { Link } from 'react-router-dom'
+import { api } from '../lib/api'
+import type { User } from '../types'
+export default function Researchers(){
+ const [people,setPeople]=useState<User[]>([]),[q,setQ]=useState('')
+ async function load(query=''){setPeople(await api<User[]>(`/researchers${query?`?q=${encodeURIComponent(query)}`:''}`))}
+ useEffect(()=>{load()},[])
+ return <div className="page section"><div className="page-title"><div className="eyebrow dark">RESEARCHER NETWORK</div><h1>Find people behind the evidence.</h1><p>Discover researchers by expertise, institution and country, then connect directly through AGP.</p></div><form className="research-search" onSubmit={e=>{e.preventDefault();load(q)}}><Search/><input value={q} onChange={e=>setQ(e.target.value)} placeholder="Search expertise, researcher or institution"/><button className="button dark">Find researchers</button></form><div className="people-grid">{people.map(u=><Link className="person-card card" to={`/researchers/${u.id}`} key={u.id}><div className="avatar">{u.first_name[0]}{u.last_name[0]}</div><div className="person-status">{u.collaboration_open?'Open to collaboration':'Profile'}</div><h3>{u.first_name} {u.last_name}</h3><p>{u.institution||'Independent researcher'}</p><small>{u.country||'Africa'}</small><div className="expertise">{u.expertise||'Researcher on the AGP network'}</div></Link>)}</div>{!people.length&&<div className="empty-card"><UserRoundSearch/> No researcher profiles yet.</div>}</div>
+}

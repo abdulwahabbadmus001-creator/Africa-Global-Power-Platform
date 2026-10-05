@@ -1,0 +1,27 @@
+.production-page h1,.policy-page h1{font:800 clamp(38px,6vw,66px) 'Manrope',sans-serif;letter-spacing:-.045em;line-height:1.02;margin:8px 0 18px}.production-page .lead,.policy-page .lead{max-width:850px;line-height:1.7;color:#58655f}.tool-search{display:flex;align-items:center;gap:10px;background:white;border:1px solid #d7ded8;padding:12px 14px;margin:25px 0}.tool-search input{border:0;outline:0;width:100%;background:transparent}.content-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}.content-card{padding:24px;display:flex;flex-direction:column;gap:12px}.content-card h2{font-size:22px;margin:0}.content-card p{color:#5d6963;line-height:1.6}.content-card small{color:#737e78}.content-meta{display:flex;justify-content:space-between;gap:10px;font-size:10px;text-transform:uppercase;font-weight:800;letter-spacing:.06em}.content-meta span{display:flex;align-items:center;gap:4px}.card-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:auto}.analysis-note{background:#f0f3ed;border-left:3px solid #4e6958;padding:12px}.analysis-note p{margin:6px 0 0}.country-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}.country-card{padding:18px;display:flex;flex-direction:column;gap:5px}.country-card span{font-size:11px;color:#728079}.production-form{padding:28px;margin:22px 0}.production-form label{display:flex;flex-direction:column;gap:7px;font-size:12px;font-weight:700;margin:14px 0}.production-form input,.production-form select,.production-form textarea{width:100%;padding:12px;border:1px solid #c7d0c9;background:#fbfcfa}.room-feed{display:grid;gap:12px;margin:20px 0}.room-post{padding:20px}.room-post-head{display:flex;justify-content:space-between;gap:15px}.room-post p{line-height:1.65}.room-post a{display:flex;align-items:center;gap:5px;font-size:12px;font-weight:700}.mission-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin:28px 0}.mission-card{padding:26px}.mission-card svg{width:28px;height:28px}.mission-card h2,.mission-card h3{margin:15px 0 8px}.mission-card p{color:#5d6963;line-height:1.65}.about-hero,.policy-hero{max-width:920px;padding-bottom:25px}.policy-page{max-width:980px}.policy-section{border-top:1px solid #d6ddd7;padding:28px 0}.policy-section h2{font-size:25px}.policy-section p,.policy-section li{line-height:1.75;color:#4f5d56}.policy-section li{margin:8px 0}.policy-contact{padding:24px;margin-top:24px}.policy-contact p{color:#5d6963}.about-cta{padding:28px;display:flex;align-items:center;justify-content:space-between;gap:20px}.about-cta p{margin-bottom:0;color:#5d6963}.studio-tabs{display:flex;gap:8px;margin:20px 0}.studio-tabs button{border:1px solid #d5ddd7;background:white;padding:10px 14px;display:flex;align-items:center;gap:7px;font-weight:700}.studio-tabs button.active{background:#193d2f;color:white}.auth-inline-link{text-align:right;margin:-5px 0 15px;font-size:12px}.auth-inline-link a{text-decoration:underline}.tools-menu{position:relative}.tools-menu>span{display:flex;align-items:center;gap:3px;cursor:pointer}.tools-dropdown{position:absolute;top:26px;left:-12px;min-width:180px;background:white;border:1px solid #d8ded9;box-shadow:0 12px 30px rgba(0,0,0,.09);display:none;z-index:50;padding:8px}.tools-dropdown a{display:block;padding:9px 10px;color:#24312a!important;white-space:nowrap}.tools-menu:hover .tools-dropdown{display:block}.about-home{border-top:1px solid #d9ded9}.contact-form{max-width:820px}.footer{align-items:start}.footer>div{min-width:0}.footer a{display:block;margin-top:8px}.footer-bottom{grid-column:1/-1}
+@media(max-width:1000px){.content-grid{grid-template-columns:1fr 1fr}.country-grid{grid-template-columns:repeat(3,1fr)}}
+@media(max-width:760px){.content-grid,.mission-grid{grid-template-columns:1fr}.country-grid{grid-template-columns:1fr 1fr}.about-cta{align-items:flex-start;flex-direction:column}.tools-dropdown{position:static;display:block;box-shadow:none;border:0;padding:4px 0 0 12px}.tools-menu>span{font-weight:700}}
+.invite-row{display:flex;gap:10px}.invite-row input{flex:1}
+@media(max-width:600px){.invite-row{flex-direction:column}}
+
+
+/* Final UI polish: navigation position, legal visibility and AGP Africa identity */
+html{scroll-behavior:auto}
+.agp-logo{display:inline-flex;align-items:center;gap:5px;flex:0 0 auto;line-height:1}
+.agp-logo-map{width:31px;height:36px;display:block;color:#c9a227;overflow:visible}
+.agp-logo-word{font:800 15px 'Manrope',sans-serif;letter-spacing:.035em;color:#0b0f0d}
+.agp-logo.inverse .agp-logo-word{color:#fff}
+.footer .agp-logo-map{color:#d8b23a}
+.brand>.agp-logo+span{display:flex;flex-direction:column}
+.nav{gap:18px}
+.legal-home{border-top:1px solid #d9ded9}
+.legal-home-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:30px}
+.legal-home-card{padding:25px;display:flex;gap:16px;align-items:flex-start;transition:.18s ease}
+.legal-home-card:hover{transform:translateY(-3px);box-shadow:var(--shadow)}
+.legal-home-card>svg{flex:0 0 auto;width:25px;height:25px;color:#315343;margin-top:2px}
+.legal-home-card h3{font:700 20px 'Manrope',sans-serif;margin:0 0 8px}
+.legal-home-card p{color:#5d6963;line-height:1.6;margin:0 0 15px}
+.legal-home-card span{display:flex;align-items:center;gap:6px;font-size:12px;font-weight:800}
+@media(max-width:1200px){.nav-search{display:none}.nav{gap:14px}.header{gap:20px}}
+@media(max-width:900px){.legal-home-grid{grid-template-columns:1fr}.nav{gap:20px}}
+@media(max-width:760px){.agp-logo-map{width:28px;height:32px}.agp-logo-word{font-size:14px}.legal-home-card{padding:20px}}

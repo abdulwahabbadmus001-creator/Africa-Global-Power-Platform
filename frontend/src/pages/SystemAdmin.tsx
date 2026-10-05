@@ -1,0 +1,6 @@
+import { useEffect, useState } from 'react'
+import { api } from '../lib/api'
+import type { Role, User } from '../types'
+const roles:Role[]=['reader','researcher','contributor','reviewer','editor','senior_editor','managing_editor','super_admin']
+export default function SystemAdmin(){const [users,setUsers]=useState<User[]>([]);async function load(){setUsers(await api<User[]>('/admin/users'))}useEffect(()=>{load()},[]);async function change(u:User,role:Role){await api(`/admin/users/${u.id}`,{method:'PATCH',body:JSON.stringify({role})});load()}
+ return <div className="page section"><div className="page-title"><div className="eyebrow dark">RESTRICTED SYSTEM</div><h1>Platform administration.</h1><p>This area is separate from editorial work and is limited to technical account and role controls.</p></div><div className="card table-wrap"><table><thead><tr><th>User</th><th>Country</th><th>Institution</th><th>Role</th><th>Status</th></tr></thead><tbody>{users.map(u=><tr key={u.id}><td><strong>{u.first_name} {u.last_name}</strong><small>{u.email}</small></td><td>{u.country||'—'}</td><td>{u.institution||'—'}</td><td><select value={u.role} onChange={e=>change(u,e.target.value as Role)}>{roles.map(r=><option key={r}>{r}</option>)}</select></td><td>{u.is_active?'Active':'Disabled'}</td></tr>)}</tbody></table></div></div>}

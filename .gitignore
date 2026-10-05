@@ -1,0 +1,49 @@
+﻿# Environment / secrets
+.env
+.env.*
+!.env.example
+backend/.env
+backend/.env.*
+!backend/.env.example
+frontend/.env
+frontend/.env.*
+!frontend/.env.example
+
+# Python
+backend/.venv/
+.venv/
+__pycache__/
+**/__pycache__/
+*.py[cod]
+*.sqlite
+*.sqlite3
+
+# Private manuscript storage
+backend/private_uploads/
+private_uploads/
+
+# Node / frontend
+frontend/node_modules/
+node_modules/
+frontend/dist/
+dist/
+*.tsbuildinfo
+
+# Deployment / tooling
+.netlify/
+frontend/.netlify/
+
+# Local/editor/OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+*.bak
+*.tmp
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+frontend-ui-backup-*/

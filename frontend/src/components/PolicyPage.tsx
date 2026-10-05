@@ -1,0 +1,4 @@
+import { Link } from 'react-router-dom'
+
+type Section={title:string;paragraphs:string[];bullets?:string[]}
+export default function PolicyPage({eyebrow,title,intro,updated,sections}:{eyebrow:string;title:string;intro:string;updated:string;sections:Section[]}){return <div className="page section policy-page"><div className="policy-hero"><div className="eyebrow dark">{eyebrow}</div><h1>{title}</h1><p className="lead">{intro}</p><small>Last updated: {updated}</small></div>{sections.map(section=><section className="policy-section" key={section.title}><h2>{section.title}</h2>{section.paragraphs.map((p,i)=><p key={i}>{p}</p>)}{section.bullets&&<ul>{section.bullets.map(x=><li key={x}>{x}</li>)}</ul>}</section>)}<div className="card policy-contact"><strong>Questions about this policy?</strong><p>Use the AGP contact page for privacy, legal, editorial or trust-related enquiries.</p><Link className="button dark" to="/contact">Contact AGP</Link></div></div>}

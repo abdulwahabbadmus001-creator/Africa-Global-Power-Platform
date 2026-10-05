@@ -1,0 +1,1 @@
+export default function MetricCard({label,value,caption}:{label:string;value:string|number;caption?:string}){return <div className="metric card"><span>{label}</span><strong>{value}</strong>{caption&&<small>{caption}</small>}</div>}

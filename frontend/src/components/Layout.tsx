@@ -1,0 +1,70 @@
+import { BookOpen, ChevronDown, Menu, Search, X } from 'lucide-react'
+import { useEffect, useState } from 'react'
+import { Link, NavLink, Outlet, useLocation, useNavigate } from 'react-router-dom'
+import { useAuth } from '../lib/auth'
+import AfricaLogo from './AfricaLogo'
+
+export default function Layout(){
+  const [open,setOpen]=useState(false)
+  const [query,setQuery]=useState('')
+  const {user,logout}=useAuth()
+  const nav=useNavigate()
+  const location=useLocation()
+
+  useEffect(()=>{
+    setOpen(false)
+    document.documentElement.scrollTop=0
+    document.body.scrollTop=0
+    window.scrollTo({top:0,left:0,behavior:'auto'})
+  },[location.pathname,location.search])
+
+  function doSearch(e:React.FormEvent){
+    e.preventDefault()
+    if(query.trim()) nav(`/research?q=${encodeURIComponent(query.trim())}`)
+  }
+
+  return <div className="app-shell">
+    <div className="topline">Independent African research, evidence & policy intelligence</div>
+    <header className="header">
+      <Link to="/" className="brand" onClick={()=>setOpen(false)}>
+        <AfricaLogo/>
+        <span><strong>Africa & Global Power</strong><small>Research Africa. Understand Power.</small></span>
+      </Link>
+      <button className="menu-btn" onClick={()=>setOpen(!open)} aria-label="Toggle navigation">{open?<X/>:<Menu/>}</button>
+      <nav className={open?'nav open':'nav'}>
+        <NavLink to="/research">Research</NavLink>
+        <NavLink to="/researchers">Researchers</NavLink>
+        <NavLink to="/africa">Africa</NavLink>
+        <NavLink to="/opportunities">Opportunities</NavLink>
+        <div className="nav-more tools-menu">
+          <span>Tools <ChevronDown size={15}/></span>
+          <div className="tools-dropdown">
+            <Link to="/data-lab">Data Lab</Link>
+            <Link to="/policy-tracker">Policy Tracker</Link>
+            {user&&<Link to="/research-rooms">Research Rooms</Link>}
+            <Link to="/trust">Trust Centre</Link>
+            {user&&['editor','senior_editor','managing_editor','super_admin'].includes(user.role)&&<Link to="/editorial/content">Content Studio</Link>}
+          </div>
+        </div>
+        <NavLink to="/about">About</NavLink>
+        <NavLink to="/privacy">Privacy</NavLink>
+        <NavLink to="/terms">Terms</NavLink>
+      </nav>
+      <div className="nav-actions">
+        <form onSubmit={doSearch} className="nav-search"><Search size={17}/><input value={query} onChange={e=>setQuery(e.target.value)} placeholder="Search research"/></form>
+        {user?<><Link className="button ghost" to="/dashboard">Dashboard</Link><button className="button dark" onClick={logout}>Sign out</button></>:<><Link className="button ghost" to="/login">Sign in</Link><Link className="button lime" to="/register">Join AGP</Link></>}
+      </div>
+    </header>
+    <main><Outlet/></main>
+    <footer className="footer">
+      <div>
+        <div className="brand footer-brand"><AfricaLogo inverse/><span><strong>Africa & Global Power</strong><small>African research, evidence and intelligence for a changing world.</small></span></div>
+        <p className="muted">A professional platform connecting researchers, evidence, policy intelligence and African perspectives.</p>
+      </div>
+      <div><strong>Platform</strong><Link to="/research">Research</Link><Link to="/researchers">Researchers</Link><Link to="/data-lab">Data Lab</Link><Link to="/policy-tracker">Policy Tracker</Link><Link to="/africa">Africa</Link></div>
+      <div><strong>Participate</strong><Link to="/register">Create account</Link><Link to="/dashboard/new-publication">Publish research</Link><Link to="/research-rooms">Research Rooms</Link><Link to="/opportunities">Opportunities</Link><Link to="/contact">Contact</Link></div>
+      <div><strong>Trust & Legal</strong><Link to="/about">About Us</Link><Link to="/privacy">Privacy Policy</Link><Link to="/terms">Terms & Conditions</Link><Link to="/trust">Trust Centre</Link><Link to="/editorial-policy">Editorial Policy</Link><Link to="/research-integrity">Research Integrity</Link></div>
+      <div className="footer-bottom"><BookOpen size={16}/> Africa & Global Power © {new Date().getFullYear()}</div>
+    </footer>
+  </div>
+}

@@ -1,0 +1,20 @@
+import { ExternalLink, Send, Users } from 'lucide-react'
+import { useEffect, useState } from 'react'
+import { useParams } from 'react-router-dom'
+import { api } from '../lib/api'
+import { useAuth } from '../lib/auth'
+
+type Room={id:string;owner_id:string;title:string;slug:string;description:string;topic:string;visibility:string;join_policy:string;member_count:number;is_member:boolean}
+type Post={id:string;author_name:string;body:string;resource_url?:string|null;created_at:string}
+export default function ResearchRoomDetail(){
+ const {user}=useAuth(); const {slug}=useParams(); const [room,setRoom]=useState<Room|null>(null); const [posts,setPosts]=useState<Post[]>([]); const [body,setBody]=useState(''); const [resource,setResource]=useState(''); const [error,setError]=useState(''); const [inviteEmail,setInviteEmail]=useState(''); const [inviteNotice,setInviteNotice]=useState('')
+ async function load(){if(!slug)return;try{const r=await api<Room>(`/research-rooms/${slug}`);setRoom(r);if(r.is_member)setPosts(await api<Post[]>(`/research-rooms/${slug}/posts`))}catch(e){setError(e instanceof Error?e.message:'Unable to load room')}}
+ useEffect(()=>{load()},[slug])
+ async function join(){if(!slug)return;try{await api(`/research-rooms/${slug}/join`,{method:'POST'});await load()}catch(e){setError(e instanceof Error?e.message:'Unable to join room')}}
+ async function invite(e:React.FormEvent){e.preventDefault();if(!slug||!inviteEmail)return;setInviteNotice('');try{await api(`/research-rooms/${slug}/members`,{method:'POST',body:JSON.stringify({email:inviteEmail})});setInviteNotice('Researcher added to the room.');setInviteEmail('');await load()}catch(e){setInviteNotice(e instanceof Error?e.message:'Unable to invite researcher')}}
+ async function post(e:React.FormEvent){e.preventDefault();if(!slug||!body.trim())return;try{await api(`/research-rooms/${slug}/posts`,{method:'POST',body:JSON.stringify({body,resource_url:resource||null})});setBody('');setResource('');await load()}catch(e){setError(e instanceof Error?e.message:'Unable to post')}}
+ if(error&&!room)return <div className="page section"><div className="alert error">{error}</div></div>
+ if(!room)return <div className="page section">Loading research room…</div>
+ return <div className="page section production-page"><div className="section-head"><div><div className="eyebrow dark">RESEARCH ROOM • {room.topic}</div><h1>{room.title}</h1><p className="lead">{room.description}</p><small><Users size={13}/> {room.member_count} members</small></div>{!room.is_member&&room.join_policy==='open'&&<button className="button dark" onClick={join}>Join room</button>}</div>{error&&<div className="alert error">{error}</div>}
+ {!room.is_member?<div className="card panel">Join this room to read and participate in the discussion.</div>:<>{user?.id===room.owner_id&&<form className="card production-form" onSubmit={invite}><h2>Invite a researcher</h2><p>Add an existing AGP account to this room by email.</p>{inviteNotice&&<div className="alert">{inviteNotice}</div>}<div className="invite-row"><input type="email" required value={inviteEmail} onChange={e=>setInviteEmail(e.target.value)} placeholder="researcher@example.com"/><button className="button dark" type="submit">Invite</button></div></form>}<div className="room-feed">{posts.map(p=><article className="card room-post" key={p.id}><div className="room-post-head"><strong>{p.author_name}</strong><small>{new Date(p.created_at).toLocaleString()}</small></div><p>{p.body}</p>{p.resource_url&&<a href={p.resource_url} target="_blank" rel="noreferrer">Open resource <ExternalLink size={14}/></a>}</article>)}{!posts.length&&<div className="card panel">No discussion yet. Start the first research note.</div>}</div><form className="card production-form" onSubmit={post}><h2>Add to the room</h2><label>Research note<textarea rows={5} required value={body} onChange={e=>setBody(e.target.value)}/></label><label>Optional resource URL<input type="url" value={resource} onChange={e=>setResource(e.target.value)} placeholder="https://"/></label><button className="button dark" type="submit"><Send size={16}/> Post</button></form></>}</div>
+}
