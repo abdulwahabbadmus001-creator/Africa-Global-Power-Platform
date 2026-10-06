@@ -1,4 +1,4 @@
-﻿import json
+import json
 import smtplib
 from email.message import EmailMessage
 from urllib.error import HTTPError, URLError
@@ -87,31 +87,46 @@ def _send_via_brevo_api(*, recipient: str, subject: str, text_body: str) -> None
 def _send_email(*, recipient: str, subject: str, text_body: str) -> None:
     mode = settings.email_delivery_mode.lower().strip()
 
-    if mode == "console":
-        print("\nAGP DEVELOPMENT EMAIL")
-        print(f"To: {recipient}")
-        print(f"Subject: {subject}\n")
-        print(text_body)
-        print("")
-        return
+    try:
+        if mode == "console":
+            print("\nAGP DEVELOPMENT EMAIL")
+            print(f"To: {recipient}")
+            print(f"Subject: {subject}\n")
+            print(text_body)
+            print("")
+            return
 
-    if mode == "smtp":
-        _send_via_smtp(
-            recipient=recipient,
-            subject=subject,
-            text_body=text_body,
+        if mode == "smtp":
+            _send_via_smtp(
+                recipient=recipient,
+                subject=subject,
+                text_body=text_body,
+            )
+            return
+
+        if mode == "brevo_api":
+            _send_via_brevo_api(
+                recipient=recipient,
+                subject=subject,
+                text_body=text_body,
+            )
+            return
+
+        raise EmailDeliveryError(
+            f"Unsupported EMAIL_DELIVERY_MODE: {mode}"
         )
-        return
 
-    if mode == "brevo_api":
-        _send_via_brevo_api(
-            recipient=recipient,
-            subject=subject,
-            text_body=text_body,
+    except EmailDeliveryError as exc:
+        print(
+            "AGP EMAIL DELIVERY ERROR: "
+            f"mode={mode}; "
+            f"brevo_api_key_set={bool(settings.brevo_api_key)}; "
+            f"email_from_set={bool(settings.email_from)}; "
+            f"api_url_set={bool(settings.brevo_api_url)}; "
+            f"error={exc}",
+            flush=True,
         )
-        return
-
-    raise EmailDeliveryError(f"Unsupported EMAIL_DELIVERY_MODE: {mode}")
+        raise
 
 
 def send_registration_otp(*, recipient: str, first_name: str, code: str) -> None:
