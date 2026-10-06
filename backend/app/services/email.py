@@ -76,6 +76,7 @@ def _send_via_brevo_api(*, recipient: str, subject: str, text_body: str) -> None
         message = f"Brevo API returned HTTP {exc.code}"
         if detail:
             message = f"{message}: {detail[:500]}"
+            print(f"BREVO EMAIL ERROR: {message}", flush=True)
         raise EmailDeliveryError(message) from exc
     except URLError as exc:
         raise EmailDeliveryError(f"Brevo API network error: {exc.reason}") from exc
