@@ -1,4 +1,4 @@
-﻿[build]
+[build]
   base = "frontend"
   command = "npm run build"
   publish = "dist"
@@ -6,15 +6,14 @@
 [build.environment]
   NODE_VERSION = "20"
 
-# Keep browser API requests on the Netlify origin.
-# Netlify forwards them privately to the Render FastAPI service.
+# API proxy MUST come before the SPA fallback.
 [[redirects]]
   from = "/api/*"
   to = "https://africa-global-power-api.onrender.com/api/:splat"
   status = 200
   force = true
 
-# React/Vite SPA fallback. Keep this LAST so /api/* is matched first.
+# React Router SPA fallback.
 [[redirects]]
   from = "/*"
   to = "/index.html"
