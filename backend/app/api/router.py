@@ -1,19 +1,8 @@
 from fastapi import APIRouter
-
 from app.api.routes import (
-    account_recovery,
-    admin,
-    amplification,
-    analytics,
-    auth,
-    contact,
-    editorial,
-    editorial_auth,
-    messages,
-    platform,
-    publications,
-    researchers,
-    trust,
+    account_recovery, admin, amplification, analytics, auth, contact,
+    editorial, editorial_auth, engagement, messages, platform,
+    publications, researchers, trust,
 )
 
 api_router = APIRouter()
@@ -28,5 +17,6 @@ api_router.include_router(trust.router, prefix="/trust", tags=["research-trust-v
 api_router.include_router(platform.router, tags=["platform-tools"])
 api_router.include_router(contact.router, prefix="/contact", tags=["contact"])
 api_router.include_router(messages.router, prefix="/messages", tags=["messages"])
+api_router.include_router(engagement.router, prefix="/engagement", tags=["reader-engagement"])
 api_router.include_router(analytics.router, prefix="/analytics", tags=["analytics"])
 api_router.include_router(admin.router, prefix="/admin", tags=["admin"])
