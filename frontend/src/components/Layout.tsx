@@ -49,6 +49,20 @@ export default function Layout(){
         <NavLink to="/about">About</NavLink>
         <NavLink to="/privacy">Privacy</NavLink>
         <NavLink to="/terms">Terms</NavLink>
+      
+        <div className="mobile-auth">
+          {user ? (
+            <>
+              <Link className="button ghost" to="/dashboard">Dashboard</Link>
+              <button className="button dark" onClick={logout}>Sign out</button>
+            </>
+          ) : (
+            <>
+              <Link className="button ghost" to="/login">Sign in</Link>
+              <Link className="button lime" to="/register">Join AGP</Link>
+            </>
+          )}
+        </div>
       </nav>
       <div className="nav-actions">
         <form onSubmit={doSearch} className="nav-search"><Search size={17}/><input value={query} onChange={e=>setQuery(e.target.value)} placeholder="Search research"/></form>
@@ -64,7 +78,7 @@ export default function Layout(){
       <div><strong>Platform</strong><Link to="/research">Research</Link><Link to="/researchers">Researchers</Link><Link to="/data-lab">Data Lab</Link><Link to="/policy-tracker">Policy Tracker</Link><Link to="/africa">Africa</Link></div>
       <div><strong>Participate</strong><Link to="/register">Create account</Link><Link to="/dashboard/new-publication">Publish research</Link><Link to="/research-rooms">Research Rooms</Link><Link to="/opportunities">Opportunities</Link><Link to="/contact">Contact</Link></div>
       <div><strong>Trust & Legal</strong><Link to="/about">About Us</Link><Link to="/privacy">Privacy Policy</Link><Link to="/terms">Terms & Conditions</Link><Link to="/trust">Trust Centre</Link><Link to="/editorial-policy">Editorial Policy</Link><Link to="/research-integrity">Research Integrity</Link></div>
-      <div className="footer-bottom"><BookOpen size={16}/> Africa & Global Power © {new Date().getFullYear()}</div>
+      <div className="footer-bottom"><BookOpen size={16}/> Africa & Global Power Â© {new Date().getFullYear()}</div>
     </footer>
   </div>
 }
