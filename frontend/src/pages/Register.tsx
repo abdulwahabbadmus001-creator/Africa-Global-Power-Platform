@@ -1,3 +1,44 @@
-import{useState}from'react';import{Link,useNavigate}from'react-router-dom';import{api}from'../lib/api'
-type RegistrationResponse={message:string;email:string;requires_verification:boolean}
-export default function Register(){const navigate=useNavigate(),[form,setForm]=useState({first_name:'',last_name:'',email:'',password:'',country:'',institution:'',requested_role:'researcher'}),[error,setError]=useState(''),[busy,setBusy]=useState(false);function change(e:React.ChangeEvent<HTMLInputElement|HTMLSelectElement>){setForm(c=>({...c,[e.target.name]:e.target.value}))}async function submit(e:React.FormEvent){e.preventDefault();setBusy(true);setError('');try{const r=await api<RegistrationResponse>('/auth/register',{method:'POST',body:JSON.stringify(form)});navigate(`/verify-email?email=${encodeURIComponent(r.email)}`)}catch(err){setError(err instanceof Error?err.message:'Unable to create account.')}finally{setBusy(false)}}return <div className="auth-page"><form className="auth-card wide card" onSubmit={submit}><div className="eyebrow dark">JOIN THE NETWORK</div><h1>Create your AGP account.</h1><p>Choose how you want to participate in AGP, then verify your email before accessing your workspace.</p>{error&&<div className="alert error">{error}</div>}<div className="form-grid"><label>First name<input name="first_name" required minLength={2} value={form.first_name} onChange={change}/></label><label>Last name<input name="last_name" required minLength={2} value={form.last_name} onChange={change}/></label><label>Email<input name="email" type="email" required value={form.email} onChange={change}/></label><label>Country<input name="country" value={form.country} onChange={change}/></label><label className="span-2">Institution / organisation<input name="institution" value={form.institution} onChange={change}/></label><label>Password<input name="password" type="password" required minLength={10} maxLength={128} value={form.password} onChange={change}/><small>Minimum 10 characters.</small></label><label>Account type<select name="requested_role" value={form.requested_role} onChange={change}><option value="researcher">Researcher</option><option value="contributor">Contributor</option><option value="reader">Reader</option></select></label></div><div className="role-help"><strong>Reader:</strong> read, save, follow and contact researchers. <strong>Researcher:</strong> build a public profile and submit research. <strong>Contributor:</strong> contribute publishable work through editorial review.</div><button className="button lime dark-text large full" disabled={busy}>{busy?'Creating account…':'Create account'}</button><small>Already registered? <Link to="/login">Sign in</Link></small></form></div>}
+import { ArrowRight, BookOpen, Microscope } from 'lucide-react'
+import { Link } from 'react-router-dom'
+
+export default function Register(){
+  return <div className="auth-page join-choice-page">
+    <div className="join-choice-shell">
+      <div className="eyebrow dark">JOIN AFRICA & GLOBAL POWER</div>
+      <h1>Choose how you want to use AGP.</h1>
+      <p className="join-choice-intro">Reader and Researcher accounts serve different purposes, so each has its own registration form and workspace.</p>
+
+      <div className="join-choice-grid">
+        <article className="card join-choice-card">
+          <div className="join-choice-icon"><BookOpen size={28}/></div>
+          <div className="eyebrow dark">READER ACCOUNT</div>
+          <h2>Read, save and connect.</h2>
+          <p>For readers, professionals and organisations that want to discover African research and connect with researchers.</p>
+          <ul>
+            <li>Save research</li>
+            <li>Follow researchers</li>
+            <li>Receive notifications</li>
+            <li>Send opportunity or collaboration inquiries</li>
+          </ul>
+          <Link className="button dark large full" to="/register/reader">Create Reader Account <ArrowRight size={17}/></Link>
+        </article>
+
+        <article className="card join-choice-card researcher-choice">
+          <div className="join-choice-icon"><Microscope size={28}/></div>
+          <div className="eyebrow dark">RESEARCHER ACCOUNT</div>
+          <h2>Build your research identity.</h2>
+          <p>For researchers who want a public professional profile and access to AGP's research publishing workflow.</p>
+          <ul>
+            <li>Public researcher profile</li>
+            <li>Submit research for editorial review</li>
+            <li>Publication analytics and amplification</li>
+            <li>Receive collaboration and opportunity inquiries</li>
+          </ul>
+          <Link className="button lime dark-text large full" to="/register/researcher">Create Researcher Account <ArrowRight size={17}/></Link>
+        </article>
+      </div>
+
+      <div className="join-signin">Already have an AGP account? <Link to="/login">Sign in</Link></div>
+    </div>
+  </div>
+}

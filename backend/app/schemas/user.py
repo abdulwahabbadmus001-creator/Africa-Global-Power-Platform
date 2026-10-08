@@ -45,7 +45,9 @@ class RegisterRequest(BaseModel):
     first_name: str = Field(min_length=2, max_length=120)
     last_name: str = Field(min_length=2, max_length=120)
     country: str | None = None
-    institution: str | None = None
+    institution: str | None = Field(default=None, max_length=255)
+    professional_headline: str | None = Field(default=None, max_length=180)
+    expertise: str | None = None
     requested_role: Literal["reader", "researcher", "contributor"] = "researcher"
 
 

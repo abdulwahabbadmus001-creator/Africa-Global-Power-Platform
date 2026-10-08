@@ -146,6 +146,18 @@ def register(
         ),
         country=payload.country,
         institution=payload.institution,
+        professional_headline=(
+            payload.professional_headline.strip()
+            if role != UserRole.reader
+            and payload.professional_headline
+            else None
+        ),
+        expertise=(
+            payload.expertise.strip()
+            if role != UserRole.reader
+            and payload.expertise
+            else None
+        ),
         role=role,
         is_active=False,
         is_email_verified=False,

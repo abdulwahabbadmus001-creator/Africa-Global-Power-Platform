@@ -33,3 +33,28 @@ html{scroll-behavior:auto}
 @media(max-width:600px){.research-search{display:grid;grid-template-columns:auto minmax(0,1fr);padding:10px}.research-search>button{grid-column:1/-1;width:100%}.research-search input{min-width:0;padding:9px 4px}.hero-actions{flex-direction:column;align-items:stretch}.hero-actions .button{width:100%}.form-actions{flex-direction:column}.form-actions .button{width:100%}.message-row{grid-template-columns:36px minmax(0,1fr);gap:10px;padding:15px 12px}.message-row time{grid-column:2}.content-meta{flex-direction:column;align-items:flex-start}.room-post-head{flex-direction:column;gap:5px}.saved-main{padding-right:5px}.saved-remove{position:static;margin:10px 0 20px}}
 @media(max-width:520px){.brand small{display:none}.footer{grid-template-columns:1fr;padding-bottom:95px}.footer>div:first-child{grid-column:auto}.footer-bottom{left:max(18px,env(safe-area-inset-left));right:18px}.metrics-grid,.workspace-metrics,.mini-metrics,.reader-metrics{grid-template-columns:1fr}.country-grid{grid-template-columns:1fr}.profile-hero{gap:18px;padding-bottom:28px}.large-avatar{width:82px;height:82px}.profile-links,.profile-cta-row{flex-direction:column;align-items:stretch}.profile-links .button,.profile-cta-row .button{width:100%}.auth-page{padding:35px 12px}.auth-card,.auth-card.wide{padding:24px 18px}.auth-card h1{font-size:32px}.publication-form,.production-form,.panel,.review-panel,.compose{padding:18px}.empty-card,.future-module{padding:30px 18px}.section-head{margin-bottom:26px}.publication-card{min-height:0}.ticker{padding-left:14px;padding-right:14px}.notification-row{grid-template-columns:1fr}.notification-actions{grid-column:1}}
 @media(max-width:360px){.page,.hero-grid,.article-shell{width:calc(100% - 20px)}.header{padding-left:10px;padding-right:10px}.agp-logo-map{width:25px;height:29px}.agp-logo-word{font-size:12px}.brand strong{font-size:12px}.hero h1{font-size:34px}.button{padding-left:11px;padding-right:11px}}
+
+/* DISTINCT AGP ACCOUNT FLOWS 2026-10 */
+.join-choice-page{padding-block:55px}
+.join-choice-shell{width:min(960px,calc(100% - 30px));margin:auto}
+.join-choice-shell>h1{font:800 clamp(38px,6vw,66px)/1.02 'Manrope',sans-serif;letter-spacing:-.045em;margin:8px 0 16px}
+.join-choice-intro{max-width:720px;color:#5d6963;font-size:17px;line-height:1.65;margin-bottom:28px}
+.join-choice-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+.join-choice-card{padding:30px;display:flex;flex-direction:column;align-items:flex-start}
+.join-choice-icon{width:54px;height:54px;display:grid;place-items:center;background:#e9eee8;margin-bottom:25px}
+.join-choice-card h2{font:700 28px/1.1 'Manrope';margin:0 0 12px}
+.join-choice-card p{color:#5e6963;line-height:1.6}
+.join-choice-card ul{padding-left:20px;color:#4f5b55;line-height:1.8;margin-bottom:28px}
+.join-choice-card .button{margin-top:auto}
+.researcher-choice{background:var(--forest);color:white;border-color:#28483b}
+.researcher-choice .join-choice-icon{background:#16392c;color:var(--lime)}
+.researcher-choice .eyebrow{color:var(--lime)}
+.researcher-choice p,.researcher-choice ul{color:#c0cec7}
+.join-signin{text-align:center;margin-top:24px;font-size:13px}
+.join-signin a{text-decoration:underline;font-weight:800}
+.researcher-register-note{background:#eef2ed;padding:14px;margin:8px 0 20px;font-size:12px;line-height:1.6}
+@media(max-width:700px){
+  .join-choice-grid{grid-template-columns:1fr}
+  .join-choice-card{padding:24px}
+  .join-choice-shell{width:calc(100% - 24px)}
+}
