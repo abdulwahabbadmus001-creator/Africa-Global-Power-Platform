@@ -48,7 +48,7 @@ class RegisterRequest(BaseModel):
     institution: str | None = Field(default=None, max_length=255)
     professional_headline: str | None = Field(default=None, max_length=180)
     expertise: str | None = None
-    requested_role: Literal["reader", "researcher", "contributor"] = "researcher"
+    requested_role: Literal["reader", "researcher"] = "researcher"
 
 
 class LoginRequest(BaseModel):

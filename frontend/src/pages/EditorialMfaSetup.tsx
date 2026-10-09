@@ -53,6 +53,9 @@ export default function EditorialMfaSetup() {
   const [busy, setBusy] =
     useState(false)
 
+  const [destination, setDestination] =
+    useState('/editorial')
+
 
   useEffect(() => {
     api<SetupResponse>(
@@ -95,6 +98,12 @@ export default function EditorialMfaSetup() {
 
       setRecoveryCodes(
         result.recovery_codes,
+      )
+
+      setDestination(
+        result.user.role === 'super_admin'
+          ? '/system'
+          : '/editorial',
       )
 
       await refresh()
@@ -169,7 +178,7 @@ export default function EditorialMfaSetup() {
             type="button"
             onClick={() =>
               navigate(
-                '/editorial',
+                destination,
                 {
                   replace: true,
                 },

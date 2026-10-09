@@ -61,7 +61,7 @@ export default function ReaderAccountSettings(){
       </div>
 
       <div className="form-actions">
-        <button className="button dark large" disabled={busy}><Save size={17}/>{busy?'Savingâ€¦':'Save Account Settings'}</button>
+        <button className="button dark large" disabled={busy}><Save size={17}/>{busy?'Saving…':'Save Account Settings'}</button>
       </div>
     </form>
   </div>

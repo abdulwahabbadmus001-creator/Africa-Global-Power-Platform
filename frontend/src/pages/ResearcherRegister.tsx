@@ -61,7 +61,7 @@ export default function ResearcherRegister(){
 
       <div className="researcher-register-note">After verification, use <strong>Edit Public Profile</strong> to add your biography, research interests, tools, technical stack, languages, ORCID, LinkedIn, Google Scholar, ResearchGate and Featured Works.</div>
 
-      <button className="button lime dark-text large full" disabled={busy}>{busy?'Creating Researcher accountâ€¦':'Create Researcher Account'}</button>
+      <button className="button lime dark-text large full" disabled={busy}>{busy?'Creating Researcher account…':'Create Researcher Account'}</button>
       <small>Only want to read and follow research? <Link to="/register/reader">Create a Reader account</Link></small>
       <small>Already registered? <Link to="/login">Sign in</Link></small>
     </form>

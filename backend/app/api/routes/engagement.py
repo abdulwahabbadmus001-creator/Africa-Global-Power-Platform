@@ -12,8 +12,8 @@ from app.schemas.user import UserPublic
 
 router = APIRouter()
 RESEARCH_ROLES = (
-    UserRole.researcher, UserRole.contributor, UserRole.reviewer,
-    UserRole.editor, UserRole.senior_editor, UserRole.managing_editor,
+    UserRole.researcher,
+    UserRole.contributor,
 )
 
 @router.get("/saved/ids", response_model=IdList)

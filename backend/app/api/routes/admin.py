@@ -44,10 +44,6 @@ def summary(
                         (
                             UserRole.researcher,
                             UserRole.contributor,
-                            UserRole.reviewer,
-                            UserRole.editor,
-                            UserRole.senior_editor,
-                            UserRole.managing_editor,
                         )
                     )
                 )

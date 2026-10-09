@@ -20,11 +20,6 @@ router = APIRouter()
 AUTHOR_ROLES = {
     UserRole.researcher,
     UserRole.contributor,
-    UserRole.reviewer,
-    UserRole.editor,
-    UserRole.senior_editor,
-    UserRole.managing_editor,
-    UserRole.super_admin,
 }
 
 
@@ -192,13 +187,8 @@ def update(
     pub = db.get(Publication, publication_id)
     if not pub:
         raise HTTPException(status_code=404, detail="Publication not found")
-    if pub.author_id != user.id and user.role not in {
-        UserRole.editor,
-        UserRole.senior_editor,
-        UserRole.managing_editor,
-        UserRole.super_admin,
-    }:
-        raise HTTPException(status_code=403, detail="Not allowed")
+    if user.role not in AUTHOR_ROLES or pub.author_id != user.id:
+        raise HTTPException(status_code=403, detail="Author access required")
     if pub.author_id == user.id and pub.status not in {
         PublicationStatus.draft,
         PublicationStatus.revision_requested,
@@ -241,7 +231,11 @@ def submit(
     db: Session = Depends(get_db),
 ):
     pub = db.get(Publication, publication_id)
-    if not pub or pub.author_id != user.id:
+    if (
+        user.role not in AUTHOR_ROLES
+        or not pub
+        or pub.author_id != user.id
+    ):
         raise HTTPException(status_code=404, detail="Publication not found")
     if pub.status not in {PublicationStatus.draft, PublicationStatus.revision_requested}:
         raise HTTPException(

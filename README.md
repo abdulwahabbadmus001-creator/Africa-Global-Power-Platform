@@ -487,11 +487,11 @@ This keeps public opportunity listings curated rather than allowing arbitrary pu
 
 ## User Navigation Guide
 
-A downloadable **AGP User Guide** is planned for the public application so Readers and Researchers can understand the platform without needing technical knowledge.
+A downloadable **AGP User Guide** is available from the live application's **Help & Guide** page and footer.
 
-The guide is intended to cover:
+It covers:
 
-- creating the correct account type;
+- choosing the correct Reader or Researcher account;
 - email verification and sign-in;
 - Reader workspace navigation;
 - saving research and following researchers;
@@ -504,7 +504,7 @@ The guide is intended to cover:
 - opportunities;
 - privacy, editorial policy, and research-integrity expectations.
 
-The guide should be linked from the footer/help area as a downloadable PDF.
+The repository also includes `docs/LAUNCH-VALIDATION.md`, a production checklist for the final pre-launch review.
 
 ---
 

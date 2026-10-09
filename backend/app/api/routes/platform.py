@@ -183,7 +183,7 @@ def _room_out(db: Session, room: ResearchRoom, user: User) -> RoomOut:
 
 @router.get("/research-rooms", response_model=list[RoomOut])
 def rooms(
-    user: User = Depends(get_current_user),
+    user: User = Depends(require_roles(UserRole.reader, UserRole.researcher, UserRole.contributor)),
     db: Session = Depends(get_db),
 ):
     member_room_ids = select(ResearchRoomMember.room_id).where(ResearchRoomMember.user_id == user.id)
@@ -194,7 +194,7 @@ def rooms(
 @router.post("/research-rooms", response_model=RoomOut, status_code=status.HTTP_201_CREATED)
 def create_room(
     payload: RoomCreate,
-    user: User = Depends(get_current_user),
+    user: User = Depends(require_roles(UserRole.reader, UserRole.researcher, UserRole.contributor)),
     db: Session = Depends(get_db),
 ):
     if user.role == UserRole.reader:
@@ -213,7 +213,7 @@ def create_room(
 
 
 @router.get("/research-rooms/{slug}", response_model=RoomOut)
-def room_detail(slug: str, user: User = Depends(get_current_user), db: Session = Depends(get_db)):
+def room_detail(slug: str, user: User = Depends(require_roles(UserRole.reader, UserRole.researcher, UserRole.contributor)), db: Session = Depends(get_db)):
     room = db.scalar(select(ResearchRoom).where(ResearchRoom.slug == slug))
     if not room:
         raise HTTPException(status_code=404, detail="Research room not found")
@@ -224,7 +224,7 @@ def room_detail(slug: str, user: User = Depends(get_current_user), db: Session =
 
 
 @router.post("/research-rooms/{slug}/join", response_model=RoomOut)
-def join_room(slug: str, user: User = Depends(get_current_user), db: Session = Depends(get_db)):
+def join_room(slug: str, user: User = Depends(require_roles(UserRole.reader, UserRole.researcher, UserRole.contributor)), db: Session = Depends(get_db)):
     room = db.scalar(select(ResearchRoom).where(ResearchRoom.slug == slug))
     if not room:
         raise HTTPException(status_code=404, detail="Research room not found")
@@ -241,7 +241,7 @@ def join_room(slug: str, user: User = Depends(get_current_user), db: Session = D
 def invite_room_member(
     slug: str,
     payload: RoomInvite,
-    user: User = Depends(get_current_user),
+    user: User = Depends(require_roles(UserRole.reader, UserRole.researcher, UserRole.contributor)),
     db: Session = Depends(get_db),
 ):
     room = db.scalar(select(ResearchRoom).where(ResearchRoom.slug == slug))
@@ -261,7 +261,7 @@ def invite_room_member(
 
 
 @router.get("/research-rooms/{slug}/posts", response_model=list[RoomPostOut])
-def room_posts(slug: str, user: User = Depends(get_current_user), db: Session = Depends(get_db)):
+def room_posts(slug: str, user: User = Depends(require_roles(UserRole.reader, UserRole.researcher, UserRole.contributor)), db: Session = Depends(get_db)):
     room = db.scalar(select(ResearchRoom).where(ResearchRoom.slug == slug))
     if not room:
         raise HTTPException(status_code=404, detail="Research room not found")
@@ -289,7 +289,7 @@ def room_posts(slug: str, user: User = Depends(get_current_user), db: Session = 
 def create_room_post(
     slug: str,
     payload: RoomPostCreate,
-    user: User = Depends(get_current_user),
+    user: User = Depends(require_roles(UserRole.reader, UserRole.researcher, UserRole.contributor)),
     db: Session = Depends(get_db),
 ):
     room = db.scalar(select(ResearchRoom).where(ResearchRoom.slug == slug))

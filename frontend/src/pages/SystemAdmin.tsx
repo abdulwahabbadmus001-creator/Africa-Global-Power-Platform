@@ -481,13 +481,13 @@ export default function SystemAdmin() {
       {tab === 'overview' && (
         <div className="admin-summary-grid">
           {[
-            ['Users', summary?.users ?? 'â€”'],
-            ['Researchers', summary?.researchers ?? 'â€”'],
-            ['Publications', summary?.publications ?? 'â€”'],
-            ['Opportunities', summary?.opportunities ?? 'â€”'],
-            ['Policies', summary?.policies ?? 'â€”'],
-            ['Datasets', summary?.datasets ?? 'â€”'],
-            ['Research Rooms', summary?.research_rooms ?? 'â€”'],
+            ['Users', summary?.users ?? '—'],
+            ['Researchers', summary?.researchers ?? '—'],
+            ['Publications', summary?.publications ?? '—'],
+            ['Opportunities', summary?.opportunities ?? '—'],
+            ['Policies', summary?.policies ?? '—'],
+            ['Datasets', summary?.datasets ?? '—'],
+            ['Research Rooms', summary?.research_rooms ?? '—'],
           ].map(([label, value]) => (
             <div
               className="card admin-summary-card"
@@ -528,11 +528,11 @@ export default function SystemAdmin() {
                   </td>
 
                   <td>
-                    {user.country || 'â€”'}
+                    {user.country || '—'}
                   </td>
 
                   <td>
-                    {user.institution || 'â€”'}
+                    {user.institution || '—'}
                   </td>
 
                   <td>

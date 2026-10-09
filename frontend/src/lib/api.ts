@@ -26,7 +26,7 @@ function normaliseDetail(detail: unknown): string {
 
         return JSON.stringify(item)
       })
-      .join(' â€¢ ')
+      .join(' • ')
   }
 
   if (detail && typeof detail === 'object') {

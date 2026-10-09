@@ -11,8 +11,8 @@ from app.schemas.message import MessageCreate, MessageOut
 
 router = APIRouter()
 RESEARCH_ROLES = (
-    UserRole.researcher, UserRole.contributor, UserRole.reviewer,
-    UserRole.editor, UserRole.senior_editor, UserRole.managing_editor,
+    UserRole.researcher,
+    UserRole.contributor,
 )
 READER_MESSAGE_TYPES = {"general", "opportunity", "collaboration"}
 MESSAGE_LIMIT_PER_HOUR = 12

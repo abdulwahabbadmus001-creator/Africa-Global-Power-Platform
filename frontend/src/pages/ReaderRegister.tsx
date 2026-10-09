@@ -47,7 +47,7 @@ export default function ReaderRegister(){
         <label>Password<input name="password" type="password" required minLength={10} maxLength={128} value={form.password} onChange={change}/><small>Minimum 10 characters.</small></label>
       </div>
 
-      <button className="button dark large full" disabled={busy}>{busy?'Creating Reader accountâ€¦':'Create Reader Account'}</button>
+      <button className="button dark large full" disabled={busy}>{busy?'Creating Reader account…':'Create Reader Account'}</button>
       <small>Want to publish research? <Link to="/register/researcher">Create a Researcher account</Link></small>
       <small>Already registered? <Link to="/login">Sign in</Link></small>
     </form>
