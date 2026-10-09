@@ -151,6 +151,9 @@ export default function SystemAdmin() {
   const [notice, setNotice] =
     useState('')
 
+  const [error, setError] =
+    useState('')
+
   const [editOpportunity, setEditOpportunity] =
     useState<Opportunity | null>(null)
 
@@ -201,26 +204,56 @@ export default function SystemAdmin() {
   }
 
   useEffect(() => {
-    loadSummary().catch(() => {})
+    loadSummary().catch((err) => {
+      setError(
+        err instanceof Error
+          ? err.message
+          : 'Unable to load Super Admin overview.',
+      )
+    })
   }, [])
 
   useEffect(() => {
+    setNotice('')
+    setError('')
+
+    const report = (err: unknown) => {
+      setError(
+        err instanceof Error
+          ? err.message
+          : 'Unable to load this administrative section.',
+      )
+    }
+
     if (tab === 'users') {
-      loadUsers().catch(() => {})
+      loadUsers().catch(report)
     }
 
     if (tab === 'opportunities') {
-      loadOpportunities().catch(() => {})
+      loadOpportunities().catch(report)
     }
 
     if (tab === 'policies') {
-      loadPolicies().catch(() => {})
+      loadPolicies().catch(report)
     }
 
     if (tab === 'datasets') {
-      loadDatasets().catch(() => {})
+      loadDatasets().catch(report)
     }
   }, [tab])
+
+  useEffect(() => {
+    if (!editOpportunity && !editPolicy && !editDataset) return
+
+    window.requestAnimationFrame(() => {
+      document
+        .querySelector('.admin-editor')
+        ?.scrollIntoView({
+          behavior: 'smooth',
+          block: 'start',
+        })
+    })
+  }, [editOpportunity, editPolicy, editDataset])
 
   async function changeUser(
     user: User,
@@ -473,77 +506,12 @@ export default function SystemAdmin() {
         </button>
       </div>
 
-      <section
-        className="card panel"
-        style={{
-          marginTop: 18,
-          marginBottom: 22,
-          padding: 20,
-        }}
-      >
-        <div className="panel-head">
-          <div>
-            <h2>Administrative actions</h2>
-            <p>
-              Create new public-intelligence records or manage existing records
-              from the tabs above.
-            </p>
-          </div>
+      {error && (
+        <div className="alert error">
+          {error}
         </div>
+      )}
 
-        <div
-          className="form-actions"
-          style={{
-            display: 'flex',
-            flexWrap: 'wrap',
-            gap: 10,
-          }}
-        >
-          <button
-            className="button ghost"
-            type="button"
-            onClick={() => setTab('users')}
-          >
-            Manage Users & Roles
-          </button>
-
-          <Link
-            className="button dark"
-            to="/editorial/content"
-          >
-            Create Opportunity / Policy / Dataset
-          </Link>
-
-          <button
-            className="button ghost"
-            type="button"
-            onClick={() => setTab('opportunities')}
-          >
-            Manage Opportunities
-          </button>
-
-          <button
-            className="button ghost"
-            type="button"
-            onClick={() => setTab('policies')}
-          >
-            Manage Policies
-          </button>
-
-          <button
-            className="button ghost"
-            type="button"
-            onClick={() => setTab('datasets')}
-          >
-            Manage Data Lab
-          </button>
-        </div>
-
-        <p style={{ marginTop: 14, fontSize: 13 }}>
-          User accounts are deactivated rather than hard-deleted so AGP keeps
-          authorship, Trust Vault and editorial audit history intact.
-        </p>
-      </section>
       {notice && (
         <div className="alert success">
           {notice}
@@ -553,13 +521,13 @@ export default function SystemAdmin() {
       {tab === 'overview' && (
         <div className="admin-summary-grid">
           {[
-            ['Users', summary?.users ?? 'â€”'],
-            ['Researchers', summary?.researchers ?? 'â€”'],
-            ['Publications', summary?.publications ?? 'â€”'],
-            ['Opportunities', summary?.opportunities ?? 'â€”'],
-            ['Policies', summary?.policies ?? 'â€”'],
-            ['Datasets', summary?.datasets ?? 'â€”'],
-            ['Research Rooms', summary?.research_rooms ?? 'â€”'],
+            ['Users', summary?.users ?? '—'],
+            ['Researchers', summary?.researchers ?? '—'],
+            ['Publications', summary?.publications ?? '—'],
+            ['Opportunities', summary?.opportunities ?? '—'],
+            ['Policies', summary?.policies ?? '—'],
+            ['Datasets', summary?.datasets ?? '—'],
+            ['Research Rooms', summary?.research_rooms ?? '—'],
           ].map(([label, value]) => (
             <div
               className="card admin-summary-card"
@@ -574,6 +542,17 @@ export default function SystemAdmin() {
 
       {tab === 'users' && (
         <div className="card table-wrap">
+          <div className="admin-context-toolbar">
+            <div>
+              <h2>Users & Roles</h2>
+              <p>
+                Change a user's role or deactivate/reactivate access.
+                Accounts are not hard-deleted so authorship, Trust Vault,
+                publication and audit history remain intact.
+              </p>
+            </div>
+          </div>
+
           <table>
             <thead>
               <tr>
@@ -600,11 +579,11 @@ export default function SystemAdmin() {
                   </td>
 
                   <td>
-                    {user.country || 'â€”'}
+                    {user.country || '—'}
                   </td>
 
                   <td>
-                    {user.institution || 'â€”'}
+                    {user.institution || '—'}
                   </td>
 
                   <td>
@@ -656,6 +635,24 @@ export default function SystemAdmin() {
 
       {tab === 'opportunities' && (
         <div className="admin-content-list">
+          <div className="admin-context-toolbar">
+            <div>
+              <h2>Opportunities</h2>
+              <p>Create verified opportunities or manage existing records.</p>
+            </div>
+            <Link
+              className="button dark"
+              to="/editorial/content?tab=opportunity"
+            >
+              Create Opportunity
+            </Link>
+          </div>
+
+          {opportunities.length === 0 && (
+            <div className="card panel">
+              No opportunity records found.
+            </div>
+          )}
           {opportunities.map((item) => {
             const closed =
               item.tags.includes(
@@ -756,6 +753,24 @@ export default function SystemAdmin() {
 
       {tab === 'policies' && (
         <div className="admin-content-list">
+          <div className="admin-context-toolbar">
+            <div>
+              <h2>Policy Tracker</h2>
+              <p>Create policy records or manage existing records.</p>
+            </div>
+            <Link
+              className="button dark"
+              to="/editorial/content?tab=policy"
+            >
+              Create Policy
+            </Link>
+          </div>
+
+          {policies.length === 0 && (
+            <div className="card panel">
+              No policy records found.
+            </div>
+          )}
           {policies.map((item) => (
             <article
               className="card admin-content-card"
@@ -834,6 +849,24 @@ export default function SystemAdmin() {
 
       {tab === 'datasets' && (
         <div className="admin-content-list">
+          <div className="admin-context-toolbar">
+            <div>
+              <h2>Data Lab</h2>
+              <p>Create curated datasets or manage existing records.</p>
+            </div>
+            <Link
+              className="button dark"
+              to="/editorial/content?tab=dataset"
+            >
+              Create Dataset
+            </Link>
+          </div>
+
+          {datasets.length === 0 && (
+            <div className="card panel">
+              No dataset records found.
+            </div>
+          )}
           {datasets.map((item) => (
             <article
               className="card admin-content-card"
