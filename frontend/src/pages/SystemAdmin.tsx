@@ -12,6 +12,7 @@ import {
   useEffect,
   useState,
 } from 'react'
+import { Link } from 'react-router-dom'
 import { api } from '../lib/api'
 import type {
   Role,
@@ -472,6 +473,77 @@ export default function SystemAdmin() {
         </button>
       </div>
 
+      <section
+        className="card panel"
+        style={{
+          marginTop: 18,
+          marginBottom: 22,
+          padding: 20,
+        }}
+      >
+        <div className="panel-head">
+          <div>
+            <h2>Administrative actions</h2>
+            <p>
+              Create new public-intelligence records or manage existing records
+              from the tabs above.
+            </p>
+          </div>
+        </div>
+
+        <div
+          className="form-actions"
+          style={{
+            display: 'flex',
+            flexWrap: 'wrap',
+            gap: 10,
+          }}
+        >
+          <button
+            className="button ghost"
+            type="button"
+            onClick={() => setTab('users')}
+          >
+            Manage Users & Roles
+          </button>
+
+          <Link
+            className="button dark"
+            to="/editorial/content"
+          >
+            Create Opportunity / Policy / Dataset
+          </Link>
+
+          <button
+            className="button ghost"
+            type="button"
+            onClick={() => setTab('opportunities')}
+          >
+            Manage Opportunities
+          </button>
+
+          <button
+            className="button ghost"
+            type="button"
+            onClick={() => setTab('policies')}
+          >
+            Manage Policies
+          </button>
+
+          <button
+            className="button ghost"
+            type="button"
+            onClick={() => setTab('datasets')}
+          >
+            Manage Data Lab
+          </button>
+        </div>
+
+        <p style={{ marginTop: 14, fontSize: 13 }}>
+          User accounts are deactivated rather than hard-deleted so AGP keeps
+          authorship, Trust Vault and editorial audit history intact.
+        </p>
+      </section>
       {notice && (
         <div className="alert success">
           {notice}
@@ -481,13 +553,13 @@ export default function SystemAdmin() {
       {tab === 'overview' && (
         <div className="admin-summary-grid">
           {[
-            ['Users', summary?.users ?? '—'],
-            ['Researchers', summary?.researchers ?? '—'],
-            ['Publications', summary?.publications ?? '—'],
-            ['Opportunities', summary?.opportunities ?? '—'],
-            ['Policies', summary?.policies ?? '—'],
-            ['Datasets', summary?.datasets ?? '—'],
-            ['Research Rooms', summary?.research_rooms ?? '—'],
+            ['Users', summary?.users ?? 'â€”'],
+            ['Researchers', summary?.researchers ?? 'â€”'],
+            ['Publications', summary?.publications ?? 'â€”'],
+            ['Opportunities', summary?.opportunities ?? 'â€”'],
+            ['Policies', summary?.policies ?? 'â€”'],
+            ['Datasets', summary?.datasets ?? 'â€”'],
+            ['Research Rooms', summary?.research_rooms ?? 'â€”'],
           ].map(([label, value]) => (
             <div
               className="card admin-summary-card"
@@ -528,11 +600,11 @@ export default function SystemAdmin() {
                   </td>
 
                   <td>
-                    {user.country || '—'}
+                    {user.country || 'â€”'}
                   </td>
 
                   <td>
-                    {user.institution || '—'}
+                    {user.institution || 'â€”'}
                   </td>
 
                   <td>

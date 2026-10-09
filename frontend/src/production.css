@@ -88,3 +88,46 @@ html{scroll-behavior:auto}
 .admin-editor input,.admin-editor select,.admin-editor textarea{border:1px solid #c7d0c9;background:#fbfcfa;padding:12px;outline:0;width:100%}
 @media(max-width:900px){.admin-summary-grid{grid-template-columns:1fr 1fr}.admin-content-card{grid-template-columns:1fr}.admin-actions{justify-content:flex-start}}
 @media(max-width:700px){.help-grid{grid-template-columns:1fr}.admin-summary-grid{grid-template-columns:1fr}.admin-actions .button{width:100%}.opportunity-filters{overflow-x:auto;flex-wrap:nowrap;padding-bottom:5px}.opportunity-filters button{flex:0 0 auto}}
+/* AGP Super Admin control visibility */
+.admin-actions{
+  display:flex!important;
+  flex-wrap:wrap!important;
+  align-items:center!important;
+  gap:8px!important;
+  margin-top:18px!important;
+  position:relative!important;
+  z-index:2!important;
+}
+.admin-actions .button,
+.admin-content-card .button{
+  display:inline-flex!important;
+  visibility:visible!important;
+  opacity:1!important;
+  pointer-events:auto!important;
+}
+.admin-content-card{
+  overflow:visible!important;
+}
+.admin-editor{
+  scroll-margin-top:110px;
+}
+.table-wrap{
+  overflow-x:auto!important;
+}
+.table-wrap table{
+  min-width:820px;
+}
+.table-wrap select,
+.table-wrap button{
+  visibility:visible!important;
+  opacity:1!important;
+  pointer-events:auto!important;
+}
+@media(max-width:760px){
+  .admin-actions{
+    align-items:stretch!important;
+  }
+  .admin-actions .button{
+    flex:1 1 145px;
+  }
+}

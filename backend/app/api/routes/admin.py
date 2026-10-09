@@ -87,17 +87,40 @@ def update_user(
             detail="User not found",
         )
 
+    if target.id == admin.id:
+        if payload.is_active is False:
+            raise HTTPException(
+                status_code=409,
+                detail="You cannot deactivate your own Super Admin account.",
+            )
+        if payload.role != UserRole.super_admin:
+            raise HTTPException(
+                status_code=409,
+                detail="You cannot remove your own Super Admin role.",
+            )
+
     if (
-        target.id == admin.id
-        and payload.is_active is False
-    ):
-        raise HTTPException(
-            status_code=409,
-            detail=(
-                "You cannot disable your own "
-                "active session"
-            ),
+        target.role == UserRole.super_admin
+        and target.is_active
+        and (
+            payload.role != UserRole.super_admin
+            or payload.is_active is False
         )
+    ):
+        active_super_admins = int(
+            db.scalar(
+                select(func.count(User.id)).where(
+                    User.role == UserRole.super_admin,
+                    User.is_active.is_(True),
+                )
+            )
+            or 0
+        )
+        if active_super_admins <= 1:
+            raise HTTPException(
+                status_code=409,
+                detail="AGP must retain at least one active Super Admin account.",
+            )
 
     target.role = payload.role
 
