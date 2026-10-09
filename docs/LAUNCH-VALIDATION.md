@@ -86,3 +86,20 @@ Test approximately 320, 360, 375, 390, 430, 768, 1024 and 1440 px.
 - [ ] Send the live production URL to the professional mentor for usability, product clarity and professional positioning.
 - [ ] Send it to the academic mentor for research credibility, editorial policy, integrity and researcher workflow.
 - [ ] Record feedback for post-launch improvements rather than changing the launch build impulsively.
+
+## Launch-Freeze Hardening
+- [ ] Researcher can delete an unsubmitted private draft from Dashboard and Publication Workspace.
+- [ ] Sealed/previously submitted Trust Vault history cannot be deleted as an ordinary draft.
+- [ ] Failed manuscript upload cleanup does not leave a new empty draft when cleanup succeeds.
+- [ ] Upload-only research cannot be sealed for Editorial without a 40+ character public abstract.
+- [ ] Approved research can be returned to Revision Requested.
+- [ ] Editorial transition failures display their backend reason.
+- [ ] Oversized manuscript reads are bounded.
+- [ ] Invalid Supabase/S3 endpoints return controlled storage errors.
+- [ ] Repeated public password failures are throttled.
+- [ ] Cross-site state-changing production requests are blocked.
+- [ ] Authenticated API responses use no-store caching.
+- [ ] Netlify serves CSP/HSTS/framing/MIME/referrer/permissions protections.
+- [ ] `npm audit --omit=dev --audit-level=high` passes.
+- [ ] `pip check` passes.
+- [ ] No real `.env` file is tracked by Git.

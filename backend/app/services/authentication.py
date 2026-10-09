@@ -1,7 +1,7 @@
 from datetime import datetime, timedelta, timezone
 
 from fastapi import HTTPException, Request, status
-from sqlalchemy import select
+from sqlalchemy import func, select
 from sqlalchemy.orm import Session
 
 from app.core.config import settings
@@ -203,6 +203,13 @@ def verify_otp_challenge(
         True,
         "Verification successful.",
     )
+
+
+
+def too_many_auth_failures(db: Session, *, email: str, event_type: str, minutes: int = 15, limit: int = 8) -> bool:
+    cutoff = utcnow() - timedelta(minutes=minutes)
+    count = db.scalar(select(func.count(AuthAuditEvent.id)).where(AuthAuditEvent.email == email.lower().strip(), AuthAuditEvent.event_type == event_type, AuthAuditEvent.success.is_(False), AuthAuditEvent.created_at >= cutoff))
+    return int(count or 0) >= limit
 
 
 def record_auth_event(

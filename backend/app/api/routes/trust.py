@@ -1,6 +1,7 @@
 from html import escape
 from uuid import UUID
 
+from botocore.exceptions import ClientError
 from fastapi import APIRouter, Depends, File, HTTPException, Request, UploadFile
 from fastapi.responses import HTMLResponse, Response
 from sqlalchemy import select
@@ -28,7 +29,7 @@ from app.schemas.trust import (
     TrustOverviewOut,
     TrustSnapshotOut,
 )
-from app.services.storage import get_private_object
+from app.services.storage import StorageConfigurationError, get_private_object
 from app.services.trust import (
     assert_editor_can_access,
     editor_access_state,
@@ -104,15 +105,22 @@ async def upload_manuscript(
     if publication.status not in {PublicationStatus.draft, PublicationStatus.revision_requested}:
         raise HTTPException(status_code=409, detail="Manuscript uploads are locked during editorial review.")
 
-    data = await file.read()
-    manuscript = store_manuscript(
-        db,
-        publication=publication,
-        author=user,
-        filename=file.filename or "manuscript",
-        content_type=file.content_type,
-        data=data,
-    )
+    max_bytes = settings.max_manuscript_mb * 1024 * 1024
+    data = await file.read(max_bytes + 1)
+    if len(data) > max_bytes:
+        raise HTTPException(status_code=413, detail=f"Manuscript exceeds the {settings.max_manuscript_mb} MB upload limit.")
+    try:
+        manuscript = store_manuscript(
+            db,
+            publication=publication,
+            author=user,
+            filename=file.filename or "manuscript",
+            content_type=file.content_type,
+            data=data,
+        )
+    except (StorageConfigurationError, ClientError) as exc:
+        db.rollback()
+        raise HTTPException(status_code=503, detail="Secure manuscript storage is temporarily unavailable. Your publication record remains private; please try the upload again later.") from exc
     db.commit()
     db.refresh(manuscript)
     return manuscript

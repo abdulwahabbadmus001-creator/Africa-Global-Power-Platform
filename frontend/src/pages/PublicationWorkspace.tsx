@@ -1,12 +1,13 @@
-import { CheckCircle2, Download, Edit3, FileLock2, Send, ShieldCheck, Upload } from 'lucide-react'
+import { CheckCircle2, Download, Edit3, FileLock2, Send, ShieldCheck, Trash2, Upload } from 'lucide-react'
 import { useEffect, useState } from 'react'
-import { Link, useParams } from 'react-router-dom'
+import { Link, useNavigate, useParams } from 'react-router-dom'
 import StatusBadge from '../components/StatusBadge'
 import { API_URL, api } from '../lib/api'
 import type { Analytics, Publication, TrustAccessEvent, TrustOverview } from '../types'
 
 export default function PublicationWorkspace() {
   const { id } = useParams()
+  const navigate = useNavigate()
   const [pubs, setPubs] = useState<Publication[]>([])
   const [stats, setStats] = useState<Analytics | null>(null)
   const [trust, setTrust] = useState<TrustOverview | null>(null)
@@ -27,11 +28,12 @@ export default function PublicationWorkspace() {
   useEffect(() => { load().catch(() => {}) }, [id])
 
   const publication = pubs.find((item) => item.id === id)
-  if (!publication) return <div className="page section">Loading publication workspace…</div>
+  if (!publication) return <div className="page section">Loading publication workspaceâ€¦</div>
 
   const publicationId = publication.id
 
   const editable = ['draft', 'revision_requested'].includes(publication.status)
+  const abstractReady = publication.abstract.trim().length >= 40
 
   async function submit() {
     setBusy(true)
@@ -45,6 +47,15 @@ export default function PublicationWorkspace() {
     } finally {
       setBusy(false)
     }
+  }
+
+  async function deleteDraft() {
+    if (!publication || publication.status !== 'draft') return
+    if (!window.confirm('Delete this unsubmitted private draft? This cannot be undone.')) return
+    setBusy(true); setNotice('')
+    try { await api(`/publications/${publicationId}`, { method: 'DELETE' }); navigate('/dashboard', { replace: true }) }
+    catch (error) { setNotice(error instanceof Error ? error.message : 'Unable to delete this private draft.') }
+    finally { setBusy(false) }
   }
 
   async function uploadReplacement() {
@@ -108,13 +119,15 @@ export default function PublicationWorkspace() {
         <div className="check"><CheckCircle2 /> Research record created</div>
         <div className="check"><CheckCircle2 /> Submission method: {publication.submission_method}</div>
         <div className="check"><CheckCircle2 /> Publication version {publication.current_version} saved</div>
+        <div className={abstractReady ? 'check' : 'alert'}><CheckCircle2 /> {abstractReady ? 'Public abstract ready' : 'Add a public abstract of at least 40 characters before Editorial submission'}</div>
         {(publication.submission_method === 'upload' || publication.submission_method === 'both') && (
           <div className="check"><CheckCircle2 /> {trust?.files.length || 0} manuscript version(s) secured</div>
         )}
         <p>Submitting creates an immutable Trust Vault snapshot with a timestamp and SHA-256 fingerprint.</p>
         <div className="form-actions">
           {editable && <Link className="button ghost large" to={`/dashboard/publications/${publicationId}/edit`}><Edit3 size={18} /> Edit draft</Link>}
-          {editable && <button className="button lime dark-text large" onClick={submit} disabled={busy}><Send size={18} /> {busy ? 'Submitting…' : 'Seal & submit to Editorial'}</button>}
+          {editable && <button className="button lime dark-text large" onClick={submit} disabled={busy || !abstractReady}><Send size={18} /> {busy ? 'Submittingâ€¦' : 'Seal & submit to Editorial'}</button>}
+          {publication.status === 'draft' && <button className="button ghost large" style={{borderColor:'#a43737',color:'#a43737'}} type="button" onClick={deleteDraft} disabled={busy}><Trash2 size={18}/> Delete unsubmitted draft</button>}
         </div>
       </div>
 
@@ -124,8 +137,8 @@ export default function PublicationWorkspace() {
           {(trust?.files || []).map((file) => (
             <div className="dashboard-row" key={file.id}>
               <div>
-                <strong>v{file.version_number} — {file.original_filename}</strong>
-                <small>{(file.size_bytes / 1024 / 1024).toFixed(2)} MB • SHA-256 {file.sha256.slice(0, 16)}… {file.is_original_submission ? '• Original sealed submission' : ''}</small>
+                <strong>v{file.version_number} â€” {file.original_filename}</strong>
+                <small>{(file.size_bytes / 1024 / 1024).toFixed(2)} MB â€¢ SHA-256 {file.sha256.slice(0, 16)}â€¦ {file.is_original_submission ? 'â€¢ Original sealed submission' : ''}</small>
               </div>
               <button className="button ghost" type="button" onClick={() => downloadFile(file.id)}><Download size={15} /> Download</button>
             </div>
@@ -161,7 +174,7 @@ export default function PublicationWorkspace() {
             <div className="history-row" key={event.id}>
               <strong>{event.actor_name}</strong>
               <span>{event.action.replaceAll('_', ' ')}</span>
-              <small>{event.actor_role || 'system'} • {new Date(event.created_at).toLocaleString()} • {event.event_hash.slice(0, 12)}…</small>
+              <small>{event.actor_role || 'system'} â€¢ {new Date(event.created_at).toLocaleString()} â€¢ {event.event_hash.slice(0, 12)}â€¦</small>
             </div>
           ))}
         </section>

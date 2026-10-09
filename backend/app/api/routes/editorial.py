@@ -32,7 +32,7 @@ EDITORIAL_ORDER = {
         PublicationStatus.revision_requested,
         PublicationStatus.rejected,
     },
-    PublicationStatus.approved: {PublicationStatus.scheduled, PublicationStatus.published},
+    PublicationStatus.approved: {PublicationStatus.scheduled, PublicationStatus.published, PublicationStatus.revision_requested},
     PublicationStatus.scheduled: {PublicationStatus.published, PublicationStatus.approved},
     PublicationStatus.revision_requested: {
         PublicationStatus.desk_review,

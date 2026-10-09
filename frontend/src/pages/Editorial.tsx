@@ -11,7 +11,7 @@ const next: Record<string, PublicationStatus[]> = {
   desk_review: ['editorial_review', 'revision_requested', 'rejected'],
   editorial_review: ['source_check', 'revision_requested', 'rejected'],
   source_check: ['approved', 'revision_requested', 'rejected'],
-  approved: ['scheduled', 'published'],
+  approved: ['scheduled', 'published', 'revision_requested'],
   scheduled: ['published', 'approved'],
   revision_requested: ['desk_review', 'editorial_review'],
 }
@@ -30,6 +30,7 @@ export default function Editorial() {
   const [history, setHistory] = useState<History[]>([])
   const [scheduleAt, setScheduleAt] = useState('')
   const [notice, setNotice] = useState('')
+  const [busy, setBusy] = useState(false)
 
   async function load() {
     setQueue(await api<EditorialQueueItem[]>('/editorial/queue'))
@@ -107,23 +108,20 @@ export default function Editorial() {
   }
 
   async function move(status: PublicationStatus) {
-    if (!selected) return
+    if (!selected || busy) return
     const body: any = { to_status: status, note }
     if (status === 'scheduled') {
-      if (!scheduleAt) {
-        window.alert('Choose the publication date and time first.')
-        return
-      }
+      if (!scheduleAt) { setNotice('Choose the publication date and time first.'); return }
       body.scheduled_for = new Date(scheduleAt).toISOString()
     }
-    await api(`/editorial/${selected.id}/transition`, { method: 'POST', body: JSON.stringify(body) })
-    setSelected(null)
-    setTrust(null)
-    setReview(null)
-    setNote('')
-    setHistory([])
-    setScheduleAt('')
-    await load()
+    setBusy(true); setNotice('')
+    try {
+      await api(`/editorial/${selected.id}/transition`, { method: 'POST', body: JSON.stringify(body) })
+      setSelected(null); setTrust(null); setReview(null); setNote(''); setHistory([]); setScheduleAt('')
+      await load()
+      setNotice(`Editorial status updated to ${status.replaceAll('_', ' ')}.`)
+    } catch (error) { setNotice(error instanceof Error ? error.message : 'Unable to update the editorial status.') }
+    finally { setBusy(false) }
   }
 
   const assignedToMe = selected?.assigned_editor_id === user?.id
@@ -153,6 +151,7 @@ export default function Editorial() {
               <StatusBadge status={item.status} />
             </button>
           ))}
+          {queue.length === 0 && <div className="empty-inline">No active editorial submissions. The desk is ready for the next sealed manuscript.</div>}
         </section>
 
         <aside className="card review-panel">
@@ -229,7 +228,7 @@ export default function Editorial() {
                   <label>Editorial note<textarea rows={5} value={note} onChange={(event) => setNote(event.target.value)} placeholder="Reason for transition, revision instructions, source issues…" /></label>
                   {selected.status === 'approved' && <label>Schedule publication <small>Required only when choosing scheduled.</small><input type="datetime-local" value={scheduleAt} onChange={(event) => setScheduleAt(event.target.value)} /></label>}
                   <div className="transition-actions">
-                    {(next[selected.status] || []).map((status) => <button className={`button ${status === 'rejected' || status === 'revision_requested' ? 'ghost' : 'dark'}`} key={status} onClick={() => move(status)}>{status === 'approved' && <CheckCircle2 size={16} />} {status.replaceAll('_', ' ')}</button>)}
+                    {(next[selected.status] || []).map((status) => <button disabled={busy} className={`button ${status === 'rejected' || status === 'revision_requested' ? 'ghost' : 'dark'}`} key={status} onClick={() => move(status)}>{status === 'approved' && <CheckCircle2 size={16} />} {busy ? 'Working…' : status.replaceAll('_', ' ')}</button>)}
                   </div>
                 </>
               )}

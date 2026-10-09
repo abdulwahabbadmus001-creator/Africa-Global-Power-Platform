@@ -48,6 +48,7 @@ from app.schemas.user import (
 from app.services.authentication import (
     issue_otp_challenge,
     record_auth_event,
+    too_many_auth_failures,
     verify_otp_challenge,
 )
 from app.services.email import (
@@ -612,6 +613,11 @@ def login(
     db: Session = Depends(get_db),
 ):
     email = payload.email.lower().strip()
+
+    if too_many_auth_failures(db, email=email, event_type="LOGIN_PASSWORD_FAILED", minutes=15, limit=8):
+        record_auth_event(db, request=request, event_type="LOGIN_THROTTLED", success=False, email=email)
+        db.commit()
+        raise HTTPException(status_code=status.HTTP_429_TOO_MANY_REQUESTS, detail="Too many unsuccessful sign-in attempts. Try again later.")
 
     user = db.scalar(
         select(User).where(

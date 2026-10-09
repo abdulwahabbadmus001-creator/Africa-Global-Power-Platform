@@ -1,4 +1,4 @@
-import {BarChart3,Bell,BookOpen,Bookmark,FilePlus2,Mail,Megaphone,Settings2,UserRoundCheck,Users} from 'lucide-react'
+import {BarChart3,Bell,BookOpen,Bookmark,FilePlus2,Mail,Megaphone,Settings2,Trash2,UserRoundCheck,Users} from 'lucide-react'
 import {useEffect,useState} from 'react'
 import {Link,Navigate} from 'react-router-dom'
 import MetricCard from '../components/MetricCard'
@@ -35,6 +35,15 @@ export default function Dashboard(){
       api<Analytics[]>('/analytics/mine').then(setStats).catch(()=>{})
     }
   },[user?.id,reader,editorial,superAdmin])
+
+  async function deleteDraft(publication:Publication){
+    if(!window.confirm(`Delete the private draft "${publication.title}"? This cannot be undone.`))return
+    try{
+      await api(`/publications/${publication.id}`,{method:'DELETE'})
+      setPubs(current=>current.filter(item=>item.id!==publication.id))
+      setStats(current=>current.filter(item=>item.publication_id!==publication.id))
+    }catch(error){window.alert(error instanceof Error?error.message:'Unable to delete this private draft.')}
+  }
 
   if(superAdmin)return <Navigate to="/system" replace/>
   if(editorial)return <Navigate to="/editorial" replace/>
@@ -96,7 +105,7 @@ export default function Dashboard(){
     </div>
 
     <div className="metrics-grid">
-      <MetricCard label="Publications" value={pubs.length}/>
+      <MetricCard label="Research records" value={pubs.length}/>
       <MetricCard label="Views" value={totals.views}/>
       <MetricCard label="Unique readers" value={totals.readers}/>
       <MetricCard label="Downloads" value={totals.downloads}/>
@@ -111,7 +120,7 @@ export default function Dashboard(){
             <Link to={`/dashboard/publications/${p.id}`}><strong>{p.title}</strong></Link>
             <small>Updated {new Date(p.updated_at).toLocaleDateString()} {' • '} {stats.find(s=>s.publication_id===p.id)?.views||0} views</small>
           </div>
-          <StatusBadge status={p.status}/>
+          <div style={{display:'flex',alignItems:'center',gap:8,flexWrap:'wrap',justifyContent:'flex-end'}}><StatusBadge status={p.status}/>{p.status==='draft'&&<button className="button ghost" style={{borderColor:'#a43737',color:'#a43737',padding:'7px 9px'}} type="button" onClick={()=>deleteDraft(p)} title="Delete unsubmitted private draft"><Trash2 size={14}/> Delete</button>}</div>
         </div>):<div className="empty-inline">Your publication workspace is empty.</div>}
       </section>
 

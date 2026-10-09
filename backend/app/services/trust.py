@@ -21,7 +21,7 @@ from app.models.trust import (
     TrustSnapshot,
 )
 from app.models.user import User, UserRole
-from app.services.storage import put_private_object
+from app.services.storage import delete_private_object, put_private_object
 
 
 EDITORIAL_ROLES = {
@@ -145,46 +145,21 @@ def store_manuscript(
     data: bytes,
 ) -> ManuscriptFile:
     suffix, mime_type = validate_manuscript(filename, content_type, data)
-
-    latest_version = db.scalar(
-        select(func.max(ManuscriptFile.version_number)).where(
-            ManuscriptFile.publication_id == publication.id
-        )
-    )
+    latest_version = db.scalar(select(func.max(ManuscriptFile.version_number)).where(ManuscriptFile.publication_id == publication.id))
     version_number = int(latest_version or 0) + 1
     digest = hashlib.sha256(data).hexdigest()
     key = f"manuscripts/{publication.id}/{uuid.uuid4().hex}{suffix}"
     backend = put_private_object(key, data, mime_type)
-
-    manuscript = ManuscriptFile(
-        publication_id=publication.id,
-        author_id=author.id,
-        version_number=version_number,
-        original_filename=Path(filename).name[:500],
-        mime_type=mime_type,
-        size_bytes=len(data),
-        sha256=digest,
-        storage_backend=backend,
-        storage_key=key,
-    )
-    db.add(manuscript)
-    db.flush()
-
-    record_trust_event(
-        db,
-        publication_id=publication.id,
-        actor=author,
-        action="manuscript_uploaded",
-        object_type="manuscript_file",
-        object_id=manuscript.id,
-        details={
-            "version_number": version_number,
-            "filename": manuscript.original_filename,
-            "sha256": digest,
-            "size_bytes": len(data),
-        },
-    )
-    return manuscript
+    try:
+        manuscript = ManuscriptFile(publication_id=publication.id, author_id=author.id, version_number=version_number, original_filename=Path(filename).name[:500], mime_type=mime_type, size_bytes=len(data), sha256=digest, storage_backend=backend, storage_key=key)
+        db.add(manuscript)
+        db.flush()
+        record_trust_event(db, publication_id=publication.id, actor=author, action="manuscript_uploaded", object_type="manuscript_file", object_id=manuscript.id, details={"version_number": version_number, "filename": manuscript.original_filename, "sha256": digest, "size_bytes": len(data)})
+        return manuscript
+    except Exception:
+        try: delete_private_object(key, backend)
+        except Exception: pass
+        raise
 
 
 def _latest_manuscript(db: Session, publication_id) -> ManuscriptFile | None:

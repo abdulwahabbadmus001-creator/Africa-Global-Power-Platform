@@ -38,6 +38,7 @@ export default function NewPublication() {
     event.preventDefault()
     setBusy(true)
     setError('')
+    let createdPublication: Publication | null = null
 
     try {
       if ((mode === 'upload' || mode === 'both') && !file) {
@@ -67,6 +68,7 @@ export default function NewPublication() {
         method: 'POST',
         body: JSON.stringify(payload),
       })
+      createdPublication = publication
 
       if (file) {
         const data = new FormData()
@@ -79,7 +81,11 @@ export default function NewPublication() {
 
       nav(`/dashboard/publications/${publication.id}`)
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Unable to create publication draft.')
+      const message = err instanceof Error ? err.message : 'Unable to create publication draft.'
+      if (createdPublication) {
+        try { await api(`/publications/${createdPublication.id}`, { method: 'DELETE' }) } catch {}
+      }
+      setError(message)
     } finally {
       setBusy(false)
     }
@@ -148,8 +154,8 @@ export default function NewPublication() {
 
         {mode === 'upload' && (
           <label>
-            Optional public abstract
-            <textarea rows={5} name="abstract" value={form.abstract} onChange={change} placeholder="You can add the public abstract now or complete it during revision before publication." />
+            Public abstract <small>Required before you can seal and submit this research to Editorial.</small>
+            <textarea rows={5} name="abstract" value={form.abstract} onChange={change} placeholder="Summarize the research for Editorial and future readers (minimum 40 characters before submission)." />
           </label>
         )}
 

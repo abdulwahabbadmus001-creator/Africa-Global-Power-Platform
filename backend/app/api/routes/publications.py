@@ -9,10 +9,10 @@ from sqlalchemy.orm import Session, joinedload
 
 from app.api.deps import get_current_user, get_db
 from app.models.publication import Publication, PublicationStatus, PublicationVersion
-from app.models.trust import ManuscriptFile
+from app.models.trust import ManuscriptFile, TrustSnapshot
 from app.models.user import User, UserRole
 from app.schemas.publication import PublicationCreate, PublicationOut, PublicationUpdate
-from app.services.storage import get_private_object
+from app.services.storage import delete_private_object, get_private_object
 from app.services.trust import seal_submission
 
 
@@ -243,9 +243,43 @@ def submit(
             detail="This publication cannot be submitted from its current state",
         )
 
+    if len(pub.abstract.strip()) < 40:
+        raise HTTPException(
+            status_code=422,
+            detail="Add a public abstract of at least 40 characters before submitting to Editorial.",
+        )
+
     seal_submission(db, publication=pub, author=user)
     pub.status = PublicationStatus.submitted
     pub.updated_at = datetime.now(timezone.utc)
     db.commit()
     db.refresh(pub)
     return pub
+
+
+@router.delete("/{publication_id}")
+def delete_draft(
+    publication_id: UUID,
+    user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    pub = db.get(Publication, publication_id)
+    if not pub:
+        raise HTTPException(status_code=404, detail="Publication not found")
+    if user.role not in AUTHOR_ROLES or pub.author_id != user.id:
+        raise HTTPException(status_code=403, detail="Author access required")
+    if pub.status != PublicationStatus.draft:
+        raise HTTPException(status_code=409, detail="Only an unsubmitted private draft can be deleted.")
+    sealed = db.scalar(select(TrustSnapshot.id).where(TrustSnapshot.publication_id == pub.id).limit(1))
+    if sealed:
+        raise HTTPException(status_code=409, detail="This research already has Trust Vault submission history and cannot be deleted as an ordinary draft.")
+    files = list(db.scalars(select(ManuscriptFile).where(ManuscriptFile.publication_id == pub.id)).all())
+    try:
+        for item in files:
+            delete_private_object(item.storage_key, item.storage_backend)
+    except Exception as exc:
+        db.rollback()
+        raise HTTPException(status_code=503, detail="AGP could not securely remove the private manuscript object. The draft was not deleted; please try again.") from exc
+    db.delete(pub)
+    db.commit()
+    return {"message": "Private draft deleted."}
