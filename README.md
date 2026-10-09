@@ -14,6 +14,33 @@ A full-stack African research, policy-intelligence, publishing, collaboration, a
 
 ---
 
+## Launch Candidate Status
+
+AGP is currently in **launch-freeze**. New discretionary features are paused while the production deployment and final smoke tests are completed.
+
+**Current launch-candidate source commit:** `da676c0` — `Finalize professional Super Admin tab workflows`
+
+The source code has passed the latest local release checks relevant to this launch candidate, including:
+
+- frontend TypeScript/Vite production build;
+- backend Python compile validation from the preceding launch-freeze release;
+- dependency consistency checks;
+- production dependency audit on the unchanged frontend dependency tree with 0 known vulnerabilities at the time of the audit;
+- Git diff/secret-safety validation;
+- clean working tree after push to `main`.
+
+Before public launch, the remaining gates are operational rather than feature-development tasks:
+
+1. confirm Netlify and Render are deploying the intended `main` revision;
+2. run the production smoke-test checklist in `docs/LAUNCH-VALIDATION.md`;
+3. verify authentication, role isolation, research submission/editorial publication flow, Super Admin controls, and public content behavior;
+4. fix only genuine launch-blocking defects found during those tests;
+5. keep the feature set frozen through launch.
+
+A successful local build or Git push is **not** treated as proof that a hosting provider has deployed the same commit. Deployment parity must be checked in the Netlify and Render dashboards.
+
+---
+
 ## Why I Built Africa & Global Power
 
 Africa & Global Power began as a research and publication project hosted on **Blogger**. Blogger made it possible to publish quickly, but as my research interests expanded and I progressed further into software development, I began asking a simple question:
@@ -22,7 +49,7 @@ Africa & Global Power began as a research and publication project hosted on **Bl
 
 AGP was therefore rebuilt as an **independent research platform** rather than a conventional blog.
 
-The goal is not simply to display articles. The platform is designed to bring together:
+The goal is not simply to display articles. The platform brings together:
 
 - independent African research;
 - policy and geopolitical analysis;
@@ -42,11 +69,11 @@ For me, AGP also represents the intersection of **research, policy analysis, pro
 
 AGP is built around one idea: **African research should be discoverable, credible, professionally presented, and connected to the people producing it.**
 
-The platform therefore separates the experience into distinct layers rather than treating everyone as the same type of user.
+The platform separates responsibilities rather than treating every account as the same type of user.
 
 ### Public / Guest Experience
 
-Visitors can explore public research, researchers, policy intelligence, opportunities, Data Lab resources, legal pages, and the Trust Centre without needing an account.
+Visitors can explore public research, researchers, policy intelligence, opportunities, Data Lab resources, legal pages, and the Trust Centre without an account.
 
 ### Reader Experience
 
@@ -88,7 +115,9 @@ Editorial operations are deliberately **not public-facing**.
 
 The editorial interface is restricted because manuscript evaluation, source checking, conflict-of-interest declarations, revision decisions, and approval actions should not become a public popularity contest or an avenue for pressure, prejudice, manipulation, or fraudulent interference.
 
-Public users can see AGP's editorial standards and research-integrity policies, but the operational editorial workspace remains role-restricted.
+Public users can see AGP's editorial standards and research-integrity policies, while the operational editorial workspace remains role-restricted.
+
+Editorial personnel are expected to use **individual provisioned accounts** rather than shared credentials. Each authorised editorial account has its own identity, password, TOTP authenticator setup, recovery codes, and auditable activity.
 
 This separation is intended to protect:
 
@@ -101,40 +130,77 @@ This separation is intended to protect:
 
 ### Super Admin Experience
 
-`super_admin` is the highest application-level role. It controls system-level user and role administration and can access protected editorial/content-management functions.
+`super_admin` is the highest application-level role. It has a dedicated protected control centre at `/system` for platform administration.
 
-However, AGP is intentionally designed so that even high-privilege roles operate through explicit workflows rather than silently bypassing research-integrity controls. Administrative power should remain traceable.
+The current Super Admin workflows include:
+
+- platform overview metrics;
+- Users & Roles management;
+- role changes for existing accounts;
+- account deactivate/reactivate controls;
+- Opportunities management;
+- Policy Tracker management;
+- Data Lab management;
+- contextual creation flows for Opportunity, Policy, and Dataset records;
+- edit, publish/unpublish, close/reopen where applicable, and delete controls for managed content;
+- access to protected editorial/content-management functions.
+
+User accounts are **deactivated/reactivated rather than hard-deleted** from the Super Admin workflow so that authorship, Trust Vault records, publication attribution, messaging relationships, and editorial audit history are not casually destroyed.
+
+Additional safeguards prevent a logged-in Super Admin from accidentally removing their own Super Admin role or deactivating the only remaining active Super Admin account.
+
+Even high-privilege roles are intended to operate through explicit, traceable workflows rather than silently bypassing research-integrity controls.
 
 ---
 
-## Design System: Why the Interface Looks This Way
+## Role Model
 
-AGP is intentionally designed to feel closer to a **research institute, policy publication, or editorial intelligence platform** than to a typical social network or personal blog.
+```text
+reader
+researcher
+contributor
+reviewer
+editor
+senior_editor
+managing_editor
+super_admin
+```
+
+Current workspace model:
+
+| Role | Primary workspace |
+|---|---|
+| Reader | Reader Workspace |
+| Researcher | Researcher Portal |
+| Contributor | Researcher/author workflow where authorised |
+| Reviewer | Editorial Review Desk |
+| Editor | Editorial Review Desk + Content Studio |
+| Senior Editor | Editorial Review Desk + Content Studio |
+| Managing Editor | Editorial Review Desk + Content Studio |
+| Super Admin | Super Admin Control Centre + authorised editorial/content tools |
+
+Editorial roles share parts of the Editorial Desk while remaining distinct account identities. Role-specific workflow authority should remain explicit and auditable as AGP governance matures.
+
+---
+
+## Design System
+
+AGP is intentionally designed to feel closer to a **research institute, policy publication, or editorial intelligence platform** than to a conventional social network or personal blog.
 
 ### Typography
 
-The interface uses:
-
-- **Manrope** for headings, navigation, metrics, labels, and strong interface hierarchy;
-- **DM Sans** for body copy, research abstracts, long-form text, and reading-heavy sections.
-
-Manrope gives the platform a structured, contemporary institutional identity, while DM Sans remains highly readable for longer research content.
+- **Manrope** — headings, navigation, metrics, labels, and interface hierarchy;
+- **DM Sans** — body copy, research abstracts, long-form text, and reading-heavy sections.
 
 ### Colour System
 
-The core interface uses a restrained palette:
-
-- **Deep Forest** `#071c16` — authority, stability, seriousness, institutional depth;
-- **AGP Gold** `#c9a227` — identity, African visual heritage, distinction, and emphasis;
-- **Lime Accent** `#d5ff62` — interaction, active states, calls to action, and modern digital contrast;
-- **Paper** `#f5f3ec` — a softer research-document background instead of stark white;
+- **Deep Forest** `#071c16` — authority, stability, institutional depth;
+- **AGP Gold** `#c9a227` — identity and emphasis;
+- **Lime Accent** `#d5ff62` — interaction and active states;
+- **Paper** `#f5f3ec` — research-document background;
 - **Ink** `#091711` — high-contrast reading text.
 
-The result is intentionally editorial rather than decorative: research is the central visual object.
-
-### Interface Structure
-
-The application uses clear separation between:
+The interface separates:
 
 - public discovery;
 - reader activity;
@@ -142,9 +208,7 @@ The application uses clear separation between:
 - editorial review;
 - system administration.
 
-This reduces role confusion and keeps sensitive workflows away from public interfaces.
-
-Responsive layouts are designed for phones, tablets, laptops, and desktop displays.
+Responsive layouts target phones, tablets, laptops, and desktop displays.
 
 ---
 
@@ -164,11 +228,11 @@ Africa-focused navigation and country-oriented research discovery.
 
 ### Opportunities Radar
 
-Curated opportunities including fellowships, research calls, collaborations, grants, and related professional opportunities.
+Curated opportunities including fellowships, research calls, collaborations, grants, internships, scholarships, conferences, and related professional opportunities.
 
 ### Data Lab
 
-A curated space for useful datasets and data resources relevant to African research and policy analysis.
+A curated space for datasets and data resources relevant to African research and policy analysis.
 
 ### Policy Tracker
 
@@ -188,24 +252,26 @@ Tools for tracking and distributing published work through canonical links, refe
 
 ### Editorial Content Studio
 
-A protected content-management interface for publishing curated:
+A protected content-management interface for authorised editorial/system roles to create curated:
 
 - datasets;
 - policy records;
 - opportunities.
 
-It is accessible only to authorised editorial/system roles.
+When opened contextually from the Super Admin Control Centre, the Content Studio can open directly on the requested Dataset, Policy, or Opportunity form.
 
 ---
 
-## How Research Moves Through AGP
+## Research Publication Workflow
 
 ```text
 Researcher creates draft
         ↓
-Researcher submits manuscript
+Researcher uploads manuscript / completes submission data
         ↓
-Submission is sealed / recorded
+Researcher submits
+        ↓
+Submission is sealed / recorded in the trust workflow
         ↓
 Desk review
         ↓
@@ -224,13 +290,13 @@ Publication
 Public discovery + analytics + amplification
 ```
 
+Drafts can be deleted by their owner while they remain eligible drafts. Once a submission is sealed into the trust workflow, its research-integrity record is intentionally protected from casual destructive deletion.
+
 Editorial actions are designed to remain traceable rather than invisible.
 
 ---
 
 ## Authentication & Access Model
-
-AGP uses separate account and security experiences for different responsibilities.
 
 ### Reader / Researcher
 
@@ -240,24 +306,56 @@ AGP uses separate account and security experiences for different responsibilitie
 - password recovery flow;
 - secure cookie-based sessions.
 
-### Editorial
+### Editorial / Super Admin
 
-Editorial accounts are not publicly registered.
+Editorial accounts are **not publicly registered**.
 
-Editorial access is provisioned separately and protected with stronger authentication controls, including TOTP-based MFA and recovery mechanisms.
+Authorised accounts are provisioned separately and use:
 
-### Roles
+- individual credentials;
+- password authentication;
+- TOTP-based MFA;
+- recovery codes;
+- protected editorial login flow;
+- audited role identity.
 
-```text
-reader
-researcher
-contributor
-reviewer
-editor
-senior_editor
-managing_editor
-super_admin
-```
+On first editorial login, the account completes authenticator setup. Each editorial professional should use their own authenticator rather than sharing another person's MFA device or account.
+
+A dedicated AGP mobile application is not required for editorial access. The dashboard is web-based; the authenticator application on the editor's phone supplies the TOTP code.
+
+---
+
+## Security & Research Integrity
+
+AGP is designed around stronger controls than a conventional publishing blog.
+
+Important protections include:
+
+- email verification;
+- login OTP challenges;
+- editorial TOTP MFA;
+- recovery codes;
+- role-based access control;
+- protected Super Admin routes;
+- private manuscript storage;
+- immutable research submission snapshots;
+- SHA-256 manuscript fingerprints;
+- confidentiality acknowledgement;
+- conflict-of-interest declarations;
+- controlled editorial assignment;
+- research-access history;
+- public certificate verification without exposing private manuscripts;
+- secure cookies;
+- production HTTPS configuration;
+- production security headers and origin protections;
+- restricted editorial and system interfaces;
+- safeguards against removing the last active Super Admin.
+
+AGP does not claim to be immune to attack. The security model is designed to reduce risk, preserve accountability, and make sensitive operations explicit and auditable.
+
+The governing principle is simple: **trust should be demonstrated through system design, not merely claimed in a policy page.**
+
+See `SECURITY.md` for repository security guidance.
 
 ---
 
@@ -299,7 +397,7 @@ super_admin
 - Pydantic 2
 - Alembic
 - Psycopg 3
-- JWT/session utilities
+- session/authentication utilities
 - Argon2 password hashing
 - multipart upload support
 - Boto3-compatible storage adapter
@@ -310,7 +408,7 @@ super_admin
 - **Supabase Storage** — private S3-compatible manuscript/object storage
 - **Render** — FastAPI production backend
 - **Netlify** — React/Vite production frontend
-- **Brevo API** — transactional OTP and system email delivery
+- **Brevo HTTPS API** — transactional OTP and system email delivery
 - **GitHub** — source control and deployment source
 
 ---
@@ -364,7 +462,9 @@ Africa-Global-Power-Platform/
 │       ├── lib/
 │       └── pages/
 ├── docs/
-│   └── assets/
+│   ├── assets/
+│   └── LAUNCH-VALIDATION.md
+├── SECURITY.md
 ├── netlify.toml
 └── README.md
 ```
@@ -431,63 +531,106 @@ STORAGE_S3_ACCESS_KEY_ID
 STORAGE_S3_SECRET_ACCESS_KEY
 ```
 
-Use `.env.example` only for safe configuration examples.
+Use `.env.example` only for safe configuration examples. Never place real production credentials in README files, issues, screenshots, logs, or commits.
 
 ---
 
-## Security & Research Integrity
+## Editorial Account Provisioning
 
-AGP is designed around stronger controls than a conventional publishing blog.
+Editorial and Super Admin accounts are created separately from public registration.
 
-Important protections include:
+From the backend environment:
 
-- email verification;
-- login OTP challenges;
-- editorial MFA;
-- role-based access control;
-- private manuscript storage;
-- immutable research submission snapshots;
-- SHA-256 manuscript fingerprints;
-- confidentiality acknowledgement;
-- conflict-of-interest declarations;
-- controlled editorial assignment;
-- research-access history;
-- public certificate verification without exposing private manuscripts;
-- secure cookies;
-- production-only HTTPS deployment;
-- restricted editorial and system interfaces.
-
-The long-term principle is simple: **trust should be demonstrated through system design, not merely claimed in a policy page.**
-
----
-
-## Publishing Opportunities as an Authorised Editor / Super Admin
-
-AGP already includes an internal Content Studio for authorised roles.
-
-```text
-Editorial / Super Admin
-        ↓
-Content Studio
-        ↓
-Opportunity
-        ↓
-Enter organisation, category, deadline,
-summary, application URL and tags
-        ↓
-Publish
-        ↓
-Opportunity becomes visible on the
-public Opportunities page
+```bash
+python -m app.scripts.create_editor
 ```
 
-This keeps public opportunity listings curated rather than allowing arbitrary public submissions to appear automatically.
+Supported provisioned roles include:
+
+```text
+reviewer
+editor
+senior_editor
+managing_editor
+super_admin
+```
+
+Each professional should receive their **own account**. Shared editorial or Super Admin credentials are not an acceptable operating model.
+
+The first editorial login completes MFA setup. The editor can scan the QR code with a compatible TOTP authenticator or use the manual setup key when configuring MFA on the same phone being used for the browser session.
+
+Recovery codes should be stored privately and offline where practical.
+
+---
+
+## Super Admin Control Centre
+
+Protected route:
+
+```text
+/system
+```
+
+The route is restricted to `super_admin`.
+
+Current administrative areas:
+
+```text
+Overview
+Users & Roles
+Opportunities
+Policies
+Data Lab
+```
+
+The content tabs are contextual: creation controls appear inside the relevant section rather than as a permanently displayed global action panel.
+
+### Users & Roles
+
+The Super Admin can:
+
+- review registered accounts;
+- change application roles;
+- deactivate an account;
+- reactivate an account.
+
+AGP intentionally avoids routine hard deletion from this interface because account deletion can damage authorship relationships, Trust Vault records, publication history, messages, and auditability.
+
+### Opportunities
+
+The Super Admin can:
+
+- create an opportunity through the contextual Content Studio flow;
+- edit an existing opportunity;
+- publish/unpublish;
+- mark closed/reopen;
+- delete an opportunity.
+
+### Policies
+
+The Super Admin can:
+
+- create a Policy Tracker record;
+- edit;
+- publish/unpublish;
+- delete.
+
+### Data Lab
+
+The Super Admin can:
+
+- create a dataset record;
+- edit;
+- publish/unpublish;
+- delete.
+
+Administrative data-load errors are surfaced in the interface rather than silently rendering an empty section.
 
 ---
 
 ## User Navigation Guide
 
-A downloadable **AGP User Guide** is available from the live application's **Help & Guide** page and footer.
+A downloadable **AGP User Guide** is available from the application's **Help & Guide** area.
 
 It covers:
 
@@ -504,13 +647,13 @@ It covers:
 - opportunities;
 - privacy, editorial policy, and research-integrity expectations.
 
-The repository also includes `docs/LAUNCH-VALIDATION.md`, a production checklist for the final pre-launch review.
+The repository also includes `docs/LAUNCH-VALIDATION.md`, which is the operational checklist for final pre-launch verification.
 
 ---
 
-## Current Production Status
+## Current Implementation Status
 
-The platform currently includes production implementations for:
+The source code currently contains implementations for:
 
 - public research discovery;
 - distinct Reader and Researcher registration;
@@ -522,8 +665,12 @@ The platform currently includes production implementations for:
 - researcher following;
 - notifications;
 - internal messaging;
-- research submissions;
+- research drafts and submissions;
+- researcher-owned draft deletion where permitted;
+- abstract readiness validation before submission;
+- private manuscript upload/storage;
 - editorial workflow;
+- revision workflow;
 - Trust Vault;
 - research amplification;
 - Data Lab;
@@ -531,16 +678,61 @@ The platform currently includes production implementations for:
 - Opportunities;
 - Research Rooms;
 - Editorial Content Studio;
-- system role administration;
+- Super Admin Control Centre;
+- system user/role administration;
 - responsive mobile, tablet, and desktop layouts.
 
-AGP remains an actively developed research and software project. New modules are added when they serve the core purpose of improving African research discovery, integrity, collaboration, and policy intelligence.
+### Launch Freeze
+
+The product is now intentionally **feature-frozen for launch**.
+
+No new module or discretionary redesign should be added before release. Work before launch should be limited to:
+
+- deployment verification;
+- production smoke testing;
+- documentation;
+- correcting confirmed launch-blocking defects.
+
+Post-launch improvements should be prioritised from real user/editor feedback and operational evidence rather than extending the pre-launch scope indefinitely.
+
+---
+
+## Final Pre-Launch Verification
+
+Use `docs/LAUNCH-VALIDATION.md` as the source of truth. The minimum production checks include:
+
+- homepage and primary navigation;
+- Reader/Researcher registration and OTP verification;
+- login and session persistence;
+- researcher draft creation and deletion;
+- abstract submission gate;
+- PDF/DOCX manuscript upload;
+- editorial login and TOTP MFA;
+- editorial queue and workflow transitions;
+- revision request and replacement manuscript workflow;
+- approval/publication path;
+- public article visibility;
+- reader/researcher/editorial/Super Admin role isolation;
+- Super Admin Users & Roles controls;
+- Super Admin Opportunity/Policy/Data Lab create and management flows;
+- Trust Vault access/history behavior;
+- logout/session behavior;
+- responsive/mobile checks;
+- error handling;
+- contact form;
+- production security headers where practical.
+
+If these checks pass on the deployed release, the launch candidate can proceed without further feature development.
 
 ---
 
 ## Live Platform
 
 **Africa & Global Power:** https://africaglobalpower.netlify.app/
+
+**Production API:** https://africa-global-power-api.onrender.com/
+
+The backend root route may intentionally return `404`; the production health endpoint is `/health`. API documentation routes are disabled in production.
 
 ---
 
