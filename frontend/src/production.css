@@ -58,3 +58,33 @@ html{scroll-behavior:auto}
   .join-choice-card{padding:24px}
   .join-choice-shell{width:calc(100% - 24px)}
 }
+
+/* SUPER ADMIN + HELP UPGRADE 2026-10 */
+.opportunity-filters{display:flex;gap:8px;flex-wrap:wrap;margin:0 0 18px}
+.opportunity-filters button{border:1px solid #cbd2cc;background:transparent;padding:9px 13px;font-size:12px;font-weight:700}
+.opportunity-filters button.active{background:var(--forest);color:white;border-color:var(--forest)}
+.closed-badge{align-self:flex-start;background:#efe5e2;color:#7c3329;padding:5px 8px;font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.06em}
+.guide-download{margin-bottom:30px}
+.help-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.help-card{padding:25px}
+.help-card>svg{width:26px;height:26px;color:#315343}
+.help-card h2{font-size:23px;margin:15px 0 8px}
+.help-card p{color:#5d6963;line-height:1.65}
+.admin-tabs{display:flex;gap:8px;flex-wrap:wrap;margin:0 0 25px}
+.admin-tabs button{border:1px solid #cbd2cc;background:white;padding:10px 14px;display:inline-flex;align-items:center;gap:7px;font-weight:700}
+.admin-tabs button.active{background:var(--forest);color:white;border-color:var(--forest)}
+.admin-summary-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+.admin-summary-card{padding:22px;display:flex;flex-direction:column;gap:6px}
+.admin-summary-card small{text-transform:uppercase;font-weight:800;letter-spacing:.06em;color:#6b7771}
+.admin-summary-card strong{font:800 32px 'Manrope',sans-serif}
+.admin-content-list{display:grid;gap:12px}
+.admin-content-card{padding:22px;display:grid;grid-template-columns:1fr auto;gap:25px;align-items:start}
+.admin-content-card h2{font-size:24px;margin:8px 0}
+.admin-content-card p{color:#5d6963;line-height:1.55;max-width:760px}
+.admin-actions{display:flex;gap:7px;flex-wrap:wrap;justify-content:flex-end}
+.button.danger{background:#8f302d;color:white}
+.admin-editor{padding:28px;margin:25px 0}
+.admin-editor label{display:flex;flex-direction:column;gap:7px;font-size:12px;font-weight:700;margin:14px 0}
+.admin-editor input,.admin-editor select,.admin-editor textarea{border:1px solid #c7d0c9;background:#fbfcfa;padding:12px;outline:0;width:100%}
+@media(max-width:900px){.admin-summary-grid{grid-template-columns:1fr 1fr}.admin-content-card{grid-template-columns:1fr}.admin-actions{justify-content:flex-start}}
+@media(max-width:700px){.help-grid{grid-template-columns:1fr}.admin-summary-grid{grid-template-columns:1fr}.admin-actions .button{width:100%}.opportunity-filters{overflow-x:auto;flex-wrap:nowrap;padding-bottom:5px}.opportunity-filters button{flex:0 0 auto}}
